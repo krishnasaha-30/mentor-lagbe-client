@@ -19,8 +19,8 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line/80 bg-cream/95 backdrop-blur">
-      <div className="page-container flex h-16 items-center justify-between gap-4 sm:h-[4.5rem]">
+    <header className="sticky top-0 z-50 border-b border-sky-line bg-white/95 backdrop-blur">
+      <div className="page-container flex h-16 items-center justify-between gap-4 lg:grid lg:grid-cols-[1fr_auto_1fr]">
         <Logo />
 
         {/* Desktop navigation */}
@@ -29,53 +29,55 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+              className="text-sm font-medium text-ink/70 transition-colors hover:text-ink"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        {/* Auth actions: hidden on very small screens, shown in the mobile menu instead */}
-        <div className="hidden items-center gap-2 sm:flex">
-          <Link
-            href="/sign-in"
-            className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "h-10 rounded-full px-4 text-sm text-ink hover:bg-ink/5"
-            )}
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/sign-up"
-            className={cn(
-              buttonVariants(),
-              "h-10 rounded-full bg-coral px-5 text-sm text-white hover:bg-coral-dark"
-            )}
-          >
-            Sign Up
-          </Link>
-        </div>
+        <div className="flex items-center justify-end gap-2">
+          {/* Auth actions: hidden on very small screens, shown in the mobile menu instead */}
+          <div className="hidden items-center gap-2 sm:flex">
+            <Link
+              href="/sign-in"
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "h-9 rounded-lg border-ink/20 bg-white px-4 text-[13px] text-ink hover:bg-cream-soft"
+              )}
+            >
+              Sign In
+            </Link>
+            <Link
+              href="/sign-up"
+              className={cn(
+                buttonVariants(),
+                "h-9 rounded-lg bg-coral px-4 text-[13px] text-white hover:bg-coral-dark"
+              )}
+            >
+              Sign Up
+            </Link>
+          </div>
 
-        {/* Menu button for tablet + mobile */}
-        <button
-          type="button"
-          onClick={() => setIsOpen((open) => !open)}
-          aria-label={isOpen ? "Close menu" : "Open menu"}
-          aria-expanded={isOpen}
-          aria-controls="mobile-menu"
-          className="inline-flex size-10 items-center justify-center rounded-full border border-line bg-cream text-ink transition-colors hover:bg-cream-soft lg:hidden"
-        >
-          {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+          {/* Menu button for tablet + mobile */}
+          <button
+            type="button"
+            onClick={() => setIsOpen((open) => !open)}
+            aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
+            className="inline-flex size-9 items-center justify-center rounded-lg border border-line bg-white text-ink transition-colors hover:bg-cream-soft lg:hidden"
+          >
+            {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       {isOpen ? (
         <div
           id="mobile-menu"
-          className="border-t border-line bg-cream lg:hidden"
+          className="border-t border-sky-line/60 bg-white lg:hidden"
         >
           <nav
             className="page-container flex flex-col py-3"
@@ -86,7 +88,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="rounded-lg px-2 py-3 text-sm font-medium text-ink-soft transition-colors hover:bg-cream-soft hover:text-ink"
+                className="rounded-lg px-2 py-3 text-sm font-medium text-ink/70 transition-colors hover:bg-cream-soft hover:text-ink"
               >
                 {link.label}
               </Link>
@@ -99,7 +101,7 @@ export function Navbar() {
               onClick={() => setIsOpen(false)}
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "h-10 rounded-full"
+                "h-10 rounded-lg"
               )}
             >
               Sign In
@@ -109,7 +111,7 @@ export function Navbar() {
               onClick={() => setIsOpen(false)}
               className={cn(
                 buttonVariants(),
-                "h-10 rounded-full bg-coral text-white hover:bg-coral-dark"
+                "h-10 rounded-lg bg-coral text-white hover:bg-coral-dark"
               )}
             >
               Sign Up

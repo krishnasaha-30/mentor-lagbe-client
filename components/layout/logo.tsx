@@ -15,12 +15,12 @@ export function Logo({ className }: LogoProps) {
     <Link
       href="/"
       aria-label="MentorLagbe home"
-      className={cn("inline-flex items-baseline gap-1", className)}
+      className={cn("inline-flex items-baseline gap-0.5", className)}
     >
-      <span className="text-2xl font-bold tracking-[-0.03em] text-ink">
+      <span className="text-[1.35rem] font-bold tracking-[-0.03em] text-ink">
         Mentor
       </span>
-      <span className="font-display text-[1.65rem] leading-none italic text-ink">
+      <span className="font-display text-[1.7rem] leading-none font-semibold italic text-coral">
         Lagbe
       </span>
     </Link>

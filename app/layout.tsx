@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { DM_Sans, Geist_Mono, Instrument_Serif } from "next/font/google"
+import { DM_Sans, Fraunces, Geist_Mono } from "next/font/google"
 
 import "./globals.css"
 import { Navbar } from "@/components/layout/navbar"
@@ -12,11 +12,10 @@ const dmSans = DM_Sans({
 })
 
 // Display font used by the logo and big headings
-const instrumentSerif = Instrument_Serif({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  weight: "400",
   style: ["normal", "italic"],
-  variable: "--font-instrument-serif",
+  variable: "--font-fraunces",
 })
 
 const geistMono = Geist_Mono({
@@ -39,7 +38,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${instrumentSerif.variable} ${geistMono.variable}`}
+      className={`${dmSans.variable} ${fraunces.variable} ${geistMono.variable}`}
     >
       <body className="min-h-svh bg-cream font-sans text-ink antialiased">
         <ThemeProvider defaultTheme="light">
