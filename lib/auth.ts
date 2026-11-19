@@ -20,11 +20,33 @@ export const auth = betterAuth({
     additionalFields: {
       // `type` turns this into an enum, so role can only be one of these values.
       role: {
-        type: ["student", "tutor"],
+        type: ["student", "tutor", "admin"],
         required: true,
         defaultValue: "student",
         // `input: true` allows the sign-up request to send the chosen role.
         input: true,
+      },
+      // New accounts always start on the free plan. Only the payment
+      // verification (server side) may upgrade a user to "pro".
+      plan: {
+        type: ["free", "pro"],
+        required: true,
+        defaultValue: "free",
+        input: false,
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        // Admins are promoted in the database, never through the sign-up
+        // form. Without this guard a request could POST role: "admin".
+        before: async (user) => {
+          if (user.role === "admin") {
+            return { data: { ...user, role: "student" } };
+          }
+          return { data: user };
+        },
       },
     },
   },

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { DM_Sans, Fraunces, Geist_Mono } from "next/font/google"
+import { Toaster } from "sonner"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -40,7 +41,10 @@ export default function RootLayout({
       className={`${dmSans.variable} ${fraunces.variable} ${geistMono.variable}`}
     >
       <body className="min-h-svh bg-cream font-sans text-ink antialiased">
-        <ThemeProvider defaultTheme="light">{children}</ThemeProvider>
+        <ThemeProvider defaultTheme="light">
+          {children}
+          <Toaster position="top-center" richColors />
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "sonner"
 
 import {
   SignUpForm,
@@ -23,19 +24,23 @@ export default function SignUpPage() {
       email: data.email,
       password: data.password,
       role: data.role,
-      callbackURL: "/",
+      callbackURL: "/dashboard",
     })
 
     setPending(false)
 
     if (signUpError) {
       // e.g. "User already exists. Use another email."
-      setError(signUpError.message ?? "Something went wrong. Please try again.")
+      const message =
+        signUpError.message ?? "Something went wrong. Please try again."
+      setError(message)
+      toast.error(message)
       return
     }
 
-    // Refresh so server components pick up the new session cookie, then go home.
-    router.push("/")
+    toast.success("Account created. Welcome to MentorLagbe!")
+    // Refresh so server components pick up the new session cookie.
+    router.replace("/dashboard")
     router.refresh()
   }
 
