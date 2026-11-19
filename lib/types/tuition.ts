@@ -24,3 +24,22 @@ export type TuitionSearchResponse = {
     totalPages: number
   }
 }
+
+export type NewTuitionInput = {
+  title: string
+  subject: string
+  classLevel: string
+  mode: "Online" | "Offline"
+  location: string
+  monthlyFee: number
+  daysPerWeek: number
+  description: string
+  bannerImage: string | null
+}
+
+export type TutorPostUsage = {
+  plan: "free" | "pro"
+  postsUsed: number
+  postsLimit: number | null
+  canCreate: boolean
+}
