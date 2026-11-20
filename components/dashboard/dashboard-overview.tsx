@@ -1,3 +1,5 @@
+import Link from "next/link"
+
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import type { DashboardRole } from "@/lib/dashboard/nav"
@@ -8,7 +10,7 @@ const overviewContent: Record<
   {
     description: string
     sectionHeading: string
-    features: { title: string; description: string }[]
+    features: { title: string; description: string; href?: string }[]
   }
 > = {
   student: {
@@ -50,8 +52,7 @@ const overviewContent: Record<
       },
       {
         title: "Go Pro for unlimited posts",
-        description:
-          "Pro Tutor removes the free-plan tuition posting limit.",
+        description: "Pro Tutor removes the free-plan tuition posting limit.",
       },
     ],
   },
@@ -64,16 +65,15 @@ const overviewContent: Record<
         title: "Review tuition listings",
         description:
           "Approve or reject submitted tuitions before they appear publicly.",
+        href: "/dashboard/admin/tuitions",
       },
       {
         title: "Manage users",
-        description:
-          "Review accounts and update user roles when needed.",
+        description: "Review accounts and update user roles when needed.",
       },
       {
         title: "Review transactions",
-        description:
-          "Keep track of paid subscriptions and platform revenue.",
+        description: "Keep track of paid subscriptions and platform revenue.",
       },
     ],
   },
@@ -122,6 +122,14 @@ export function DashboardOverview({
                 <p className="mt-2 text-sm leading-6 text-ink-soft">
                   {feature.description}
                 </p>
+                {feature.href ? (
+                  <Link
+                    href={feature.href}
+                    className="mt-4 inline-flex text-sm font-semibold text-forest underline-offset-4 hover:underline"
+                  >
+                    Review submissions
+                  </Link>
+                ) : null}
               </article>
             ))}
           </div>
