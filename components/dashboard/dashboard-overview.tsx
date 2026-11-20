@@ -1,9 +1,24 @@
 import Link from "next/link"
 
+import { DataRow, DataTable } from "@/components/dashboard/data-table"
+import { StatCard } from "@/components/dashboard/stat-card"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import type { DashboardRole } from "@/lib/dashboard/nav"
 import { roleLabel } from "@/lib/dashboard/nav"
+
+type StudentDashboardApplications = {
+  total: number
+  accepted: number
+  pending: number
+  recent: {
+    id: string
+    title: string
+    tutor: { name: string; image: string | null } | null
+    monthlyFee: number | null
+    status: "pending" | "accepted" | "rejected"
+  }[]
+}
 
 const overviewContent: Record<
   DashboardRole,
@@ -84,12 +99,26 @@ export function DashboardOverview({
   email,
   role,
   plan,
+  studentApplications,
+  applicationsError,
 }: {
   name: string
   email: string
   role: DashboardRole
   plan: "free" | "pro"
+  studentApplications: StudentDashboardApplications | null
+  applicationsError: boolean
 }) {
+  if (role === "student") {
+    return (
+      <StudentDashboardOverview
+        plan={plan}
+        applications={studentApplications}
+        applicationsError={applicationsError}
+      />
+    )
+  }
+
   const content = overviewContent[role]
   const firstName = name.trim().split(/\s+/)[0] || name
 
@@ -155,6 +184,111 @@ export function DashboardOverview({
             <StatusBadge status={plan} />
           </div>
         </aside>
+      </section>
+    </div>
+  )
+}
+
+function StudentDashboardOverview({
+  plan,
+  applications,
+  applicationsError,
+}: {
+  plan: "free" | "pro"
+  applications: StudentDashboardApplications | null
+  applicationsError: boolean
+}) {
+  const statUnavailable = applicationsError
+
+  return (
+    <div className="mx-auto max-w-[1200px] pb-8">
+      <section
+        aria-label="Application summary"
+        className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+      >
+        <StatCard
+          label="Total Applied"
+          value={statUnavailable ? "—" : (applications?.total ?? 0)}
+          tone="mint"
+        />
+        <StatCard
+          label="Accepted"
+          value={statUnavailable ? "—" : (applications?.accepted ?? 0)}
+          tone="butter"
+        />
+        <StatCard
+          label="Pending"
+          value={statUnavailable ? "—" : (applications?.pending ?? 0)}
+          tone="peach"
+        />
+        <StatCard
+          label="Plan"
+          value={plan === "pro" ? "Pro" : "Free"}
+          tone="lilac"
+        />
+      </section>
+
+      <section className="mt-6">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-bold text-ink">
+            Recent applications
+          </h2>
+          <Link
+            href="/dashboard/applications"
+            className="text-sm font-semibold text-forest underline-offset-4 hover:underline"
+          >
+            View all
+          </Link>
+        </div>
+
+        {applicationsError ? (
+          <div
+            role="alert"
+            className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center text-sm text-ink"
+          >
+            Applications could not be loaded. Please try again later.
+          </div>
+        ) : (
+          <DataTable
+            columns={["Tuition", "Tutor", "Fee", "Status"]}
+            isEmpty={!applications || applications.recent.length === 0}
+            emptyMessage="You have not applied to any tuitions yet."
+          >
+            {applications?.recent.map((application) => (
+              <DataRow key={application.id}>
+                <td className="px-5 py-4 font-medium text-ink sm:px-6">
+                  {application.title}
+                </td>
+                <td className="px-5 py-4 sm:px-6">
+                  {application.tutor ? (
+                    <div className="flex items-center gap-2">
+                      <UserAvatar
+                        name={application.tutor.name}
+                        image={application.tutor.image}
+                        size="sm"
+                      />
+                      <span className="max-w-40 truncate">
+                        {application.tutor.name}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-ink-soft">Unavailable</span>
+                  )}
+                </td>
+                <td className="px-5 py-4 whitespace-nowrap text-ink-soft sm:px-6">
+                  {application.monthlyFee === null
+                    ? "—"
+                    : `৳${new Intl.NumberFormat("en-BD", {
+                        maximumFractionDigits: 0,
+                      }).format(application.monthlyFee)}`}
+                </td>
+                <td className="px-5 py-4 sm:px-6">
+                  <StatusBadge status={application.status} />
+                </td>
+              </DataRow>
+            ))}
+          </DataTable>
+        )}
       </section>
     </div>
   )
