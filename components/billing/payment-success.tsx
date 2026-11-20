@@ -14,7 +14,11 @@ type VerificationState =
   | { status: "verified"; plan: BillingPlan }
 
 export function PaymentSuccess({ sessionId }: { sessionId: string | null }) {
-  const { data: session, isPending: sessionPending } = authClient.useSession()
+  const {
+    data: session,
+    isPending: sessionPending,
+    refetch: refreshSession,
+  } = authClient.useSession()
   const token = session?.session.token
   const router = useRouter()
   const [attempt, setAttempt] = useState(0)
@@ -26,7 +30,9 @@ export function PaymentSuccess({ sessionId }: { sessionId: string | null }) {
     let cancelled = false
 
     verifyCheckoutSession(sessionId, token)
-      .then((plan) => {
+      .then(async (plan) => {
+        if (cancelled) return
+        await refreshSession({ query: { disableCookieCache: true } })
         if (cancelled) return
         setState({ status: "verified", plan })
         router.refresh()
@@ -46,7 +52,7 @@ export function PaymentSuccess({ sessionId }: { sessionId: string | null }) {
     return () => {
       cancelled = true
     }
-  }, [attempt, router, sessionId, sessionPending, token])
+  }, [attempt, refreshSession, router, sessionId, sessionPending, token])
 
   const visibleState: VerificationState =
     !sessionPending && !token

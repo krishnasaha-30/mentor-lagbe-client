@@ -14,6 +14,7 @@ export const API_BASE_URL =
 export async function getSession() {
   return auth.api.getSession({
     headers: await headers(),
+    query: { disableCookieCache: true },
   })
 }
 
