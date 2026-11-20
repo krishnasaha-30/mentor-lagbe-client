@@ -1,4 +1,5 @@
 import { MapPin } from "lucide-react"
+import Link from "next/link"
 
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { UserAvatar } from "@/components/ui/user-avatar"
@@ -29,7 +30,10 @@ function formatMonthlyFee(amount: number) {
 
 export function TuitionCard({ tuition }: { tuition: PublicTuition }) {
   return (
-    <article className="overflow-hidden rounded-[20px] border border-line bg-white p-3.5 transition-shadow hover:shadow-[0_12px_30px_-20px_rgba(20,35,29,0.55)]">
+    <Link
+      href={`/tuitions/${encodeURIComponent(tuition.id)}`}
+      className="block overflow-hidden rounded-[20px] border border-line bg-white p-3.5 transition-shadow hover:shadow-[0_12px_30px_-20px_rgba(20,35,29,0.55)] focus-visible:ring-3 focus-visible:ring-forest/30 focus-visible:outline-none"
+    >
       <div
         className={`relative flex aspect-[2/1] items-center justify-center overflow-hidden rounded-xl ${getBannerTheme(tuition.subject)}`}
       >
@@ -97,6 +101,6 @@ export function TuitionCard({ tuition }: { tuition: PublicTuition }) {
           <span className="font-normal text-ink-soft">/mo</span>
         </p>
       </div>
-    </article>
+    </Link>
   )
 }

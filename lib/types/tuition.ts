@@ -15,6 +15,11 @@ export type PublicTuition = {
   } | null
 }
 
+export type PublicTuitionDetails = PublicTuition & {
+  description: string
+  createdAt: string
+}
+
 export type TuitionSearchResponse = {
   tuitions: PublicTuition[]
   pagination: {
