@@ -4,6 +4,7 @@ import { DataRow, DataTable } from "@/components/dashboard/data-table"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import type { TutorDashboardSummary } from "@/lib/api/tutor-dashboard"
 import type { DashboardRole } from "@/lib/dashboard/nav"
 import { roleLabel } from "@/lib/dashboard/nav"
 
@@ -101,6 +102,8 @@ export function DashboardOverview({
   plan,
   studentApplications,
   applicationsError,
+  tutorDashboard,
+  tutorDashboardError,
 }: {
   name: string
   email: string
@@ -108,6 +111,8 @@ export function DashboardOverview({
   plan: "free" | "pro"
   studentApplications: StudentDashboardApplications | null
   applicationsError: boolean
+  tutorDashboard: TutorDashboardSummary | null
+  tutorDashboardError: boolean
 }) {
   if (role === "student") {
     return (
@@ -115,6 +120,16 @@ export function DashboardOverview({
         plan={plan}
         applications={studentApplications}
         applicationsError={applicationsError}
+      />
+    )
+  }
+
+  if (role === "tutor") {
+    return (
+      <TutorDashboardOverview
+        plan={plan}
+        dashboard={tutorDashboard}
+        dashboardError={tutorDashboardError}
       />
     )
   }
@@ -281,6 +296,95 @@ function StudentDashboardOverview({
                     : `৳${new Intl.NumberFormat("en-BD", {
                         maximumFractionDigits: 0,
                       }).format(application.monthlyFee)}`}
+                </td>
+                <td className="px-5 py-4 sm:px-6">
+                  <StatusBadge status={application.status} />
+                </td>
+              </DataRow>
+            ))}
+          </DataTable>
+        )}
+      </section>
+    </div>
+  )
+}
+
+function TutorDashboardOverview({
+  plan,
+  dashboard,
+  dashboardError,
+}: {
+  plan: "free" | "pro"
+  dashboard: TutorDashboardSummary | null
+  dashboardError: boolean
+}) {
+  const statUnavailable = dashboardError
+
+  return (
+    <div className="mx-auto max-w-[1200px] pb-8">
+      <section
+        aria-label="Tutor activity summary"
+        className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+      >
+        <StatCard
+          label="Tuitions Posted"
+          value={statUnavailable ? "—" : (dashboard?.tuitionsPosted ?? 0)}
+          tone="mint"
+        />
+        <StatCard
+          label="Active / Approved"
+          value={statUnavailable ? "—" : (dashboard?.activeApproved ?? 0)}
+          tone="butter"
+        />
+        <StatCard
+          label="Applicants"
+          value={statUnavailable ? "—" : (dashboard?.applicantsCount ?? 0)}
+          tone="peach"
+        />
+        <StatCard
+          label="Plan"
+          value={plan === "pro" ? "Pro" : "Free"}
+          tone="lilac"
+        />
+      </section>
+
+      <section className="mt-6">
+        <h2 className="mb-3 font-display text-xl font-bold text-ink">
+          Latest applicants
+        </h2>
+        {dashboardError ? (
+          <div
+            role="alert"
+            className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center text-sm text-ink"
+          >
+            Applicant activity could not be loaded. Please try again later.
+          </div>
+        ) : (
+          <DataTable
+            columns={["Student", "Tuition", "Status"]}
+            isEmpty={!dashboard || dashboard.latestApplicants.length === 0}
+            emptyMessage="No students have applied to your tuitions yet."
+          >
+            {dashboard?.latestApplicants.map((application) => (
+              <DataRow key={application.id}>
+                <td className="px-5 py-4 sm:px-6">
+                  {application.student ? (
+                    <div className="flex items-center gap-2">
+                      <UserAvatar
+                        name={application.student.name}
+                        image={application.student.image}
+                        size="sm"
+                      />
+                      <span className="max-w-40 truncate">
+                        {application.student.name}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-ink-soft">Student unavailable</span>
+                  )}
+                </td>
+                <td className="px-5 py-4 font-medium text-ink sm:px-6">
+                  {application.tuitionTitle}
                 </td>
                 <td className="px-5 py-4 sm:px-6">
                   <StatusBadge status={application.status} />
