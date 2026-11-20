@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, type ReactNode } from "react"
+import { usePathname } from "next/navigation"
 
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import {
@@ -24,6 +25,7 @@ export function DashboardShell({
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const pathname = usePathname()
 
   function handleToggle() {
     // `window` is only touched inside an event handler, so this is safe in
@@ -90,7 +92,11 @@ export function DashboardShell({
           image={user.image}
           onToggleSidebar={handleToggle}
         />
-        <main className="flex-1 px-4 pb-12 sm:px-7 lg:px-8">{children}</main>
+        <main className="flex-1 px-4 pb-12 sm:px-7 lg:px-8">
+          <div key={pathname} className="dashboard-page-enter">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   )

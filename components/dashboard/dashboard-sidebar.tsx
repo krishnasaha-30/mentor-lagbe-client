@@ -71,7 +71,13 @@ export function DashboardSidebar({
         <Link
           href="/"
           onClick={onNavigate}
-          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] font-medium text-white/85 transition-colors hover:bg-white/10 hover:text-white"
+          aria-current={pathname === "/" ? "page" : undefined}
+          className={cn(
+            "flex items-center gap-3 rounded-xl border-l-2 px-4 py-2.5 text-[15px] font-medium transition-colors",
+            pathname === "/"
+              ? "border-stat-butter bg-forest-active text-white"
+              : "border-transparent text-white/85 hover:bg-white/10 hover:text-white"
+          )}
         >
           <House aria-hidden="true" className="size-4" />
           Homepage
@@ -89,10 +95,10 @@ export function DashboardSidebar({
               onClick={onNavigate}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "rounded-xl px-4 py-2.5 text-[15px] font-medium transition-colors",
+                "rounded-xl border-l-2 px-4 py-2.5 text-[15px] font-medium transition-colors",
                 isActive
-                  ? "bg-forest-active text-white"
-                  : "text-white/85 hover:bg-white/5 hover:text-white"
+                  ? "border-stat-butter bg-forest-active text-white shadow-sm"
+                  : "border-transparent text-white/85 hover:bg-white/5 hover:text-white"
               )}
             >
               {item.label}

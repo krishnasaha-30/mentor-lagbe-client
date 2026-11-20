@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 
 type LogoProps = {
   className?: string
+  onClick?: () => void
   /** "light" renders the wordmark for dark backgrounds (e.g. the auth panel). */
   tone?: "dark" | "light"
 }
@@ -12,10 +13,11 @@ type LogoProps = {
  * Brand wordmark: bold sans "Mentor" + italic serif "Lagbe".
  * Kept as one component so the logo looks identical everywhere.
  */
-export function Logo({ className, tone = "dark" }: LogoProps) {
+export function Logo({ className, onClick, tone = "dark" }: LogoProps) {
   return (
     <Link
       href="/"
+      onClick={onClick}
       aria-label="MentorLagbe home"
       className={cn("inline-flex items-baseline gap-0.5", className)}
     >

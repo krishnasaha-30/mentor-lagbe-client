@@ -206,6 +206,10 @@
     animation-delay: 1.2s;
   }
 
+  .dashboard-page-enter {
+    animation: dashboard-fade-up 420ms cubic-bezier(0.2, 0.65, 0.3, 1) both;
+  }
+
   /* Scroll-reveal: invisible until <Reveal> adds .reveal-visible. */
   .reveal {
     opacity: 0;
@@ -313,10 +317,22 @@
   }
 }
 
+@keyframes dashboard-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-copy-enter,
   .hero-image-enter,
   .hero-float,
+  .dashboard-page-enter,
   .marquee-track,
   .float-slow,
   .spin-slow,
