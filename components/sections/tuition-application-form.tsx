@@ -74,26 +74,10 @@ export function TuitionApplicationForm({ tuitionId }: { tuitionId: string }) {
     )
   }
 
-  if (!session) {
+  if (session && session.user.role !== "student") {
     return (
-      <div>
-        <p className="text-sm leading-6 text-ink-soft">
-          Sign in with a student account to apply for this tuition.
-        </p>
-        <Button
-          render={<Link href="/sign-in" />}
-          className="mt-4 h-11 rounded-full bg-coral px-6 text-sm font-semibold text-ink hover:bg-coral-dark"
-        >
-          Sign in to apply
-        </Button>
-      </div>
-    )
-  }
-
-  if (session.user.role !== "student") {
-    return (
-      <p className="text-sm leading-6 text-ink-soft">
-        Applications are available to student accounts.
+      <p role="status" className="text-xs leading-5 text-ink-soft">
+        Only student accounts can apply.
       </p>
     )
   }
@@ -111,9 +95,11 @@ export function TuitionApplicationForm({ tuitionId }: { tuitionId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-2.5">
       <div>
-        <Label htmlFor="application-phone">Phone number</Label>
+        <Label htmlFor="application-phone" className="text-[10px]">
+          Phone
+        </Label>
         <Input
           id="application-phone"
           name="phone"
@@ -121,36 +107,40 @@ export function TuitionApplicationForm({ tuitionId }: { tuitionId: string }) {
           required
           maxLength={30}
           autoComplete="tel"
-          placeholder="+880 1XXX-XXXXXX"
-          className="mt-1.5"
+          placeholder="01XXXXXXXXX"
+          className="mt-1 h-9 px-3 text-xs"
         />
       </div>
       <div>
-        <Label htmlFor="application-schedule">Preferred schedule</Label>
+        <Label htmlFor="application-schedule" className="text-[10px]">
+          Preferred schedule
+        </Label>
         <Input
           id="application-schedule"
           name="preferredSchedule"
           required
           maxLength={200}
-          placeholder="e.g. Weekday evenings"
-          className="mt-1.5"
+          placeholder="Sat, Mon, Wed"
+          className="mt-1 h-9 px-3 text-xs"
         />
       </div>
       <div>
-        <Label htmlFor="application-note">Note to the tutor (optional)</Label>
+        <Label htmlFor="application-note" className="text-[10px]">
+          Learning note
+        </Label>
         <textarea
           id="application-note"
           name="note"
           maxLength={1000}
-          rows={4}
-          placeholder="Share anything else the tutor should know."
-          className="mt-1.5 w-full resize-y rounded-lg border border-line bg-white px-4 py-3 text-[15px] text-ink outline-none placeholder:text-ink-soft/60 focus-visible:border-forest/60 focus-visible:ring-3 focus-visible:ring-forest/15"
+          rows={3}
+          placeholder="Tell the tutor your goals..."
+          className="mt-1 w-full resize-y rounded-lg border border-line bg-white px-3 py-2.5 text-xs text-ink outline-none placeholder:text-ink-soft/60 focus-visible:border-forest/60 focus-visible:ring-3 focus-visible:ring-forest/15"
         />
       </div>
       {error ? (
         <p
           role="alert"
-          className="rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm text-ink"
+          className="rounded-lg border border-coral/40 bg-coral/10 px-3 py-2 text-xs text-ink"
         >
           {error}
         </p>
@@ -158,10 +148,24 @@ export function TuitionApplicationForm({ tuitionId }: { tuitionId: string }) {
       <Button
         type="submit"
         disabled={pending}
-        className="h-11 w-full rounded-full bg-coral px-6 text-sm font-semibold text-ink hover:bg-coral-dark"
+        className="h-9 w-full rounded-full bg-coral px-5 text-xs font-semibold text-ink hover:bg-coral-dark"
       >
-        {pending ? "Submitting..." : "Apply for this tuition"}
+        {pending ? "Submitting..." : "Apply Now"}
       </Button>
+      <p className="text-[10px] leading-4 text-ink-soft">
+        Only student accounts can apply.
+        {!session ? (
+          <>
+            {" "}
+            <Link
+              href="/sign-in"
+              className="font-semibold text-forest underline underline-offset-2"
+            >
+              Sign in
+            </Link>
+          </>
+        ) : null}
+      </p>
     </form>
   )
 }

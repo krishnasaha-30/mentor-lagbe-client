@@ -164,15 +164,9 @@ export default async function TuitionDetailsPage({
         </article>
 
         <aside className="rounded-[20px] border border-line bg-white p-5 sm:p-6 lg:sticky lg:top-6">
-          <p className="text-xs font-semibold tracking-[0.16em] text-forest uppercase">
-            Interested?
-          </p>
-          <h2 className="mt-2 font-display text-2xl font-bold text-ink">
-            Apply for this tuition
+          <h2 className="font-display text-xl font-bold text-ink">
+            Apply for Tuition
           </h2>
-          <p className="mt-2 mb-5 text-sm leading-6 text-ink-soft">
-            Share your contact details and preferred schedule with the tutor.
-          </p>
           <TuitionApplicationForm tuitionId={tuition.id} />
         </aside>
       </div>
