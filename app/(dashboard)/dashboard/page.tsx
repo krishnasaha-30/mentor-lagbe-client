@@ -2,6 +2,7 @@ import { DashboardOverview } from "@/components/dashboard/dashboard-overview"
 import { requireDashboard } from "@/lib/dashboard/guard"
 import { getMyApplications } from "@/lib/api/applications"
 import { getTutorDashboard } from "@/lib/api/tutor-dashboard"
+import { getAdminDashboard } from "@/lib/api/admin-dashboard"
 
 export default async function DashboardPage() {
   const { session, role } = await requireDashboard()
@@ -9,6 +10,8 @@ export default async function DashboardPage() {
   let applicationsError = false
   let tutorDashboard = null
   let tutorDashboardError = false
+  let adminDashboard = null
+  let adminDashboardError = false
 
   if (role === "student") {
     try {
@@ -44,6 +47,15 @@ export default async function DashboardPage() {
     }
   }
 
+  if (role === "admin") {
+    try {
+      adminDashboard = await getAdminDashboard(session.session.token)
+    } catch (error) {
+      console.error("Could not load admin dashboard summary:", error)
+      adminDashboardError = true
+    }
+  }
+
   return (
     <DashboardOverview
       name={session.user.name}
@@ -54,6 +66,8 @@ export default async function DashboardPage() {
       applicationsError={applicationsError}
       tutorDashboard={tutorDashboard}
       tutorDashboardError={tutorDashboardError}
+      adminDashboard={adminDashboard}
+      adminDashboardError={adminDashboardError}
     />
   )
 }

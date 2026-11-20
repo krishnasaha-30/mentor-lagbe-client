@@ -4,9 +4,9 @@ import { DataRow, DataTable } from "@/components/dashboard/data-table"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { UserAvatar } from "@/components/ui/user-avatar"
+import type { AdminDashboardSummary } from "@/lib/api/admin-dashboard"
 import type { TutorDashboardSummary } from "@/lib/api/tutor-dashboard"
 import type { DashboardRole } from "@/lib/dashboard/nav"
-import { roleLabel } from "@/lib/dashboard/nav"
 
 type StudentDashboardApplications = {
   total: number
@@ -104,6 +104,8 @@ export function DashboardOverview({
   applicationsError,
   tutorDashboard,
   tutorDashboardError,
+  adminDashboard,
+  adminDashboardError,
 }: {
   name: string
   email: string
@@ -113,6 +115,8 @@ export function DashboardOverview({
   applicationsError: boolean
   tutorDashboard: TutorDashboardSummary | null
   tutorDashboardError: boolean
+  adminDashboard: AdminDashboardSummary | null
+  adminDashboardError: boolean
 }) {
   if (role === "student") {
     return (
@@ -134,74 +138,17 @@ export function DashboardOverview({
     )
   }
 
-  const content = overviewContent[role]
-  const firstName = name.trim().split(/\s+/)[0] || name
-
-  return (
-    <div className="mx-auto max-w-[1200px] pb-8">
-      <section className="rounded-[20px] border border-line bg-white p-6 sm:p-8">
-        <p className="text-xs font-semibold tracking-[0.16em] text-forest uppercase">
-          {roleLabel[role]} dashboard
-        </p>
-        <h2 className="mt-3 font-display text-3xl leading-tight font-bold tracking-[-0.02em] text-ink sm:text-4xl">
-          Welcome back, {firstName}
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-soft sm:text-base">
-          {content.description}
-        </p>
-      </section>
-
-      <section className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div>
-          <h3 className="font-display text-xl font-bold text-ink">
-            {content.sectionHeading}
-          </h3>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {content.features.map((feature) => (
-              <article
-                key={feature.title}
-                className="rounded-[20px] border border-line bg-white p-5"
-              >
-                <h4 className="font-semibold text-ink">{feature.title}</h4>
-                <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  {feature.description}
-                </p>
-                {feature.href ? (
-                  <Link
-                    href={feature.href}
-                    className="mt-4 inline-flex text-sm font-semibold text-forest underline-offset-4 hover:underline"
-                  >
-                    Review submissions
-                  </Link>
-                ) : null}
-              </article>
-            ))}
-          </div>
-        </div>
-
-        <aside className="h-fit rounded-[20px] border border-line bg-white p-5">
-          <h3 className="font-display text-lg font-bold text-ink">
-            Your account
-          </h3>
-          <div className="mt-5 flex items-center gap-3">
-            <UserAvatar name={name} size="lg" />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-ink">{name}</p>
-              <p className="truncate text-xs text-ink-soft">{email}</p>
-            </div>
-          </div>
-          <div className="mt-5 flex items-center justify-between border-t border-line pt-4 text-sm">
-            <span className="text-ink-soft">Role</span>
-            <span className="font-medium text-ink">{roleLabel[role]}</span>
-          </div>
-          <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="text-ink-soft">Plan</span>
-            <StatusBadge status={plan} />
-          </div>
-        </aside>
-      </section>
-    </div>
-  )
+  if (role === "admin") {
+    return (
+      <AdminDashboardOverview
+        name={name}
+        email={email}
+        plan={plan}
+        dashboard={adminDashboard}
+        dashboardError={adminDashboardError}
+      />
+    )
+  }
 }
 
 function StudentDashboardOverview({
@@ -393,6 +340,133 @@ function TutorDashboardOverview({
             ))}
           </DataTable>
         )}
+      </section>
+    </div>
+  )
+}
+
+function AdminDashboardOverview({
+  name,
+  email,
+  plan,
+  dashboard,
+  dashboardError,
+}: {
+  name: string
+  email: string
+  plan: "free" | "pro"
+  dashboard: AdminDashboardSummary | null
+  dashboardError: boolean
+}) {
+  const content = overviewContent.admin
+  const firstName = name.trim().split(/\s+/)[0] || name
+
+  return (
+    <div className="mx-auto max-w-[1200px] pb-8">
+      <section className="rounded-[20px] border border-line bg-white p-6 sm:p-8">
+        <p className="text-xs font-semibold tracking-[0.16em] text-forest uppercase">
+          Admin dashboard
+        </p>
+        <h2 className="mt-3 font-display text-3xl leading-tight font-bold tracking-[-0.02em] text-ink sm:text-4xl">
+          Welcome back, {firstName}
+        </h2>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-soft sm:text-base">
+          {content.description}
+        </p>
+      </section>
+
+      <section
+        aria-label="Platform summary"
+        className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+      >
+        <StatCard
+          label="Total Users"
+          value={dashboardError ? "—" : (dashboard?.totalUsers ?? 0)}
+          tone="mint"
+        />
+        <StatCard
+          label="Total Tutors"
+          value={dashboardError ? "—" : (dashboard?.totalTutors ?? 0)}
+          tone="butter"
+        />
+        <StatCard
+          label="Pending / Approved"
+          value={
+            dashboardError
+              ? "— / —"
+              : `${dashboard?.pendingTuitions ?? 0} / ${dashboard?.approvedTuitions ?? 0}`
+          }
+          tone="peach"
+        />
+        <StatCard label="Stripe Revenue" value="N/A" tone="lilac" />
+      </section>
+
+      <section className="mt-6 rounded-[20px] border border-line bg-white p-6 sm:p-8">
+        <h2 className="font-display text-xl font-bold text-ink">
+          Monthly revenue
+        </h2>
+        <div
+          role="status"
+          className="mt-5 flex min-h-32 items-center justify-center rounded-xl bg-cream-soft px-5 py-8 text-center text-sm leading-6 text-ink-soft"
+        >
+          Stripe payment tracking is not connected yet. Revenue data will appear
+          here once paid transactions are recorded.
+        </div>
+        {dashboardError ? (
+          <p role="alert" className="mt-4 text-sm text-coral-dark">
+            Platform statistics could not be loaded.
+          </p>
+        ) : null}
+      </section>
+
+      <section className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div>
+          <h3 className="font-display text-xl font-bold text-ink">
+            {content.sectionHeading}
+          </h3>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {content.features.map((feature) => (
+              <article
+                key={feature.title}
+                className="rounded-[20px] border border-line bg-white p-5"
+              >
+                <h4 className="font-semibold text-ink">{feature.title}</h4>
+                <p className="mt-2 text-sm leading-6 text-ink-soft">
+                  {feature.description}
+                </p>
+                {feature.href ? (
+                  <Link
+                    href={feature.href}
+                    className="mt-4 inline-flex text-sm font-semibold text-forest underline-offset-4 hover:underline"
+                  >
+                    Review submissions
+                  </Link>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <aside className="h-fit rounded-[20px] border border-line bg-white p-5">
+          <h3 className="font-display text-lg font-bold text-ink">
+            Your account
+          </h3>
+          <div className="mt-5 flex items-center gap-3">
+            <UserAvatar name={name} size="lg" />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-ink">{name}</p>
+              <p className="truncate text-xs text-ink-soft">{email}</p>
+            </div>
+          </div>
+          <div className="mt-5 flex items-center justify-between border-t border-line pt-4 text-sm">
+            <span className="text-ink-soft">Role</span>
+            <span className="font-medium text-ink">Admin</span>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-sm">
+            <span className="text-ink-soft">Plan</span>
+            <StatusBadge status={plan} />
+          </div>
+        </aside>
       </section>
     </div>
   )
