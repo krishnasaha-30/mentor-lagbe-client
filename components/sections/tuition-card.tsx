@@ -32,7 +32,7 @@ export function TuitionCard({ tuition }: { tuition: PublicTuition }) {
   return (
     <Link
       href={`/tuitions/${encodeURIComponent(tuition.id)}`}
-      className="block overflow-hidden rounded-[20px] border border-line bg-white p-3.5 transition-shadow hover:shadow-[0_12px_30px_-20px_rgba(20,35,29,0.55)] focus-visible:ring-3 focus-visible:ring-forest/30 focus-visible:outline-none"
+      className="group block overflow-hidden rounded-[20px] border border-line bg-white p-3.5 transition-all duration-300 hover:-translate-y-1 hover:border-forest/20 hover:shadow-[0_22px_45px_-28px_rgba(20,35,29,0.55)] focus-visible:ring-3 focus-visible:ring-forest/30 focus-visible:outline-none"
     >
       <div
         className={`relative flex aspect-[2/1] items-center justify-center overflow-hidden rounded-xl ${getBannerTheme(tuition.subject)}`}
@@ -43,10 +43,10 @@ export function TuitionCard({ tuition }: { tuition: PublicTuition }) {
             src={tuition.bannerImage}
             alt=""
             referrerPolicy="no-referrer"
-            className="absolute inset-0 size-full object-cover"
+            className="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <span className="font-display text-4xl font-bold text-ink">
+          <span className="font-display text-4xl font-bold text-ink transition-transform duration-500 group-hover:scale-105">
             {tuition.subject}
           </span>
         )}

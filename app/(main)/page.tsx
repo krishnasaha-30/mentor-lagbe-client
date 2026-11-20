@@ -35,7 +35,7 @@ export default async function Page() {
 
   return (
     <main>
-      <Banner />
+      <Banner tutorCount={stats?.tutors} />
       <HomeSections
         tuitions={tuitions}
         tuitionsError={tuitionsError}

@@ -41,6 +41,10 @@ export default function RootLayout({
       className={`${dmSans.variable} ${fraunces.variable} ${geistMono.variable}`}
     >
       <body className="min-h-svh bg-cream font-sans text-ink antialiased">
+        {/* Without JavaScript the scroll-reveal elements must stay visible. */}
+        <noscript>
+          <style>{`.reveal { opacity: 1 !important; transform: none !important; }`}</style>
+        </noscript>
         <ThemeProvider defaultTheme="light">
           {children}
           <Toaster position="top-center" richColors />
