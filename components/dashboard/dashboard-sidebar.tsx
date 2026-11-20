@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { House } from "lucide-react"
 import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/logo"
@@ -65,6 +66,17 @@ export function DashboardSidebar({
           </span>
         </div>
       </div>
+
+      <nav className="mt-5" aria-label="Main navigation">
+        <Link
+          href="/"
+          onClick={onNavigate}
+          className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-[15px] font-medium text-white/85 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          <House aria-hidden="true" className="size-4" />
+          Homepage
+        </Link>
+      </nav>
 
       <nav className="mt-5 flex flex-1 flex-col gap-1" aria-label="Dashboard">
         {items.map((item) => {
