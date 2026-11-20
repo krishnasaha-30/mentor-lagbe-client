@@ -50,6 +50,10 @@ export function getDashboardTitle(
   role: DashboardRole,
   pathname: string
 ): string {
+  if (/^\/dashboard\/tuitions\/[^/]+\/edit$/.test(pathname)) {
+    return "Edit Tuition"
+  }
+
   if (pathname === "/dashboard") {
     if (role === "student") return "Student Overview"
     if (role === "tutor") return "Tutor Overview"

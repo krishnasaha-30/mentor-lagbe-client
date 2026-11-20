@@ -7,25 +7,36 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createTuition, uploadTuitionBanner } from "@/lib/api/tutor-tuitions"
+import {
+  createTuition,
+  updateTuition,
+  uploadTuitionBanner,
+} from "@/lib/api/tutor-tuitions"
 import { authClient } from "@/lib/auth-client"
-import type { NewTuitionInput, TutorPostUsage } from "@/lib/types/tuition"
+import type {
+  NewTuitionInput,
+  TutorPostUsage,
+  TutorTuition,
+} from "@/lib/types/tuition"
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024
 
 export function PostTuitionForm({
   usage,
   usageError,
+  tuition,
 }: {
   usage: TutorPostUsage | null
   usageError: boolean
+  tuition?: TutorTuition
 }) {
   const router = useRouter()
   const { data: session } = authClient.useSession()
   const [bannerFile, setBannerFile] = useState<File | null>(null)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const cannotPost = usage?.canCreate === false
+  const isEditing = tuition !== undefined
+  const cannotPost = !isEditing && usage?.canCreate === false
 
   function handleBannerChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null
@@ -101,7 +112,7 @@ export function PostTuitionForm({
       return
     }
 
-    const tuition: NewTuitionInput = {
+    const tuitionData: NewTuitionInput = {
       title: String(formData.get("title") ?? ""),
       subject: String(formData.get("subject") ?? ""),
       classLevel: String(formData.get("classLevel") ?? ""),
@@ -110,21 +121,32 @@ export function PostTuitionForm({
       monthlyFee,
       daysPerWeek,
       description: String(formData.get("description") ?? ""),
-      bannerImage: null,
+      bannerImage: tuition?.bannerImage ?? null,
     }
 
     setPending(true)
 
     try {
       if (bannerFile) {
-        tuition.bannerImage = await uploadTuitionBanner(bannerFile, token)
+        tuitionData.bannerImage = await uploadTuitionBanner(
+          bannerFile,
+          token,
+          tuition?.id
+        )
       }
 
-      await createTuition(tuition, token)
-      toast.success("Tuition submitted for admin approval.")
-      form.reset()
-      setBannerFile(null)
-      router.refresh()
+      if (tuition) {
+        await updateTuition(tuition.id, tuitionData, token)
+        toast.success("Tuition updated and sent for admin approval.")
+        router.push("/dashboard/tuitions")
+        router.refresh()
+      } else {
+        await createTuition(tuitionData, token)
+        toast.success("Tuition submitted for admin approval.")
+        form.reset()
+        setBannerFile(null)
+        router.refresh()
+      }
     } catch (requestError) {
       const message =
         requestError instanceof Error
@@ -139,7 +161,7 @@ export function PostTuitionForm({
 
   return (
     <div className="mx-auto max-w-[920px] rounded-[20px] border border-line bg-white p-5 sm:p-7">
-      {usage ? (
+      {!isEditing && usage ? (
         <div
           role="status"
           className={`mb-5 rounded-xl px-4 py-3 text-sm ${
@@ -152,7 +174,7 @@ export function PostTuitionForm({
             ? "Pro plan: unlimited tuition posts."
             : `Free plan: ${usage.postsUsed} of 2 posts used.`}
         </div>
-      ) : usageError ? (
+      ) : !isEditing && usageError ? (
         <p
           role="alert"
           className="mb-5 rounded-xl border border-coral/40 bg-coral/10 px-4 py-3 text-sm text-ink"
@@ -162,7 +184,7 @@ export function PostTuitionForm({
         </p>
       ) : null}
 
-      {cannotPost ? (
+      {!isEditing && cannotPost ? (
         <p
           role="alert"
           className="mb-5 rounded-xl border border-coral/40 bg-coral/10 px-4 py-3 text-sm text-ink"
@@ -183,6 +205,7 @@ export function PostTuitionForm({
             name="title"
             required
             maxLength={120}
+            defaultValue={tuition?.title}
             placeholder="e.g. HSC Higher Math Batch"
           />
         </div>
@@ -193,7 +216,7 @@ export function PostTuitionForm({
             id="subject"
             name="subject"
             required
-            defaultValue="Math"
+            defaultValue={tuition?.subject ?? "Math"}
             className="h-12 w-full rounded-lg border border-line bg-white px-4 text-[15px] text-ink outline-none focus-visible:border-forest/60 focus-visible:ring-3 focus-visible:ring-forest/15"
           >
             {[
@@ -217,7 +240,7 @@ export function PostTuitionForm({
             id="classLevel"
             name="classLevel"
             required
-            defaultValue="Class 11-12"
+            defaultValue={tuition?.classLevel ?? "Class 11-12"}
             className="h-12 w-full rounded-lg border border-line bg-white px-4 text-[15px] text-ink outline-none focus-visible:border-forest/60 focus-visible:ring-3 focus-visible:ring-forest/15"
           >
             {[
@@ -241,7 +264,7 @@ export function PostTuitionForm({
             id="mode"
             name="mode"
             required
-            defaultValue="Online"
+            defaultValue={tuition?.mode ?? "Online"}
             className="h-12 w-full rounded-lg border border-line bg-white px-4 text-[15px] text-ink outline-none focus-visible:border-forest/60 focus-visible:ring-3 focus-visible:ring-forest/15"
           >
             <option value="Online">Online</option>
@@ -256,6 +279,7 @@ export function PostTuitionForm({
             name="location"
             required
             maxLength={120}
+            defaultValue={tuition?.location}
             placeholder="Dhanmondi, Dhaka"
           />
         </div>
@@ -270,6 +294,7 @@ export function PostTuitionForm({
             min={1}
             max={1000000}
             step={1}
+            defaultValue={tuition?.monthlyFee}
             placeholder="3500"
           />
         </div>
@@ -284,7 +309,7 @@ export function PostTuitionForm({
             min={1}
             max={7}
             step={1}
-            defaultValue={3}
+            defaultValue={tuition?.daysPerWeek ?? 3}
           />
         </div>
 
@@ -300,7 +325,9 @@ export function PostTuitionForm({
           <p className="text-xs text-ink-soft">
             {bannerFile
               ? `${bannerFile.name} selected`
-              : "JPG or PNG, up to 2 MB. Uploaded securely via ImgBB."}
+              : tuition?.bannerImage
+                ? "Current banner will be kept unless you choose another image."
+                : "JPG or PNG, up to 2 MB. Uploaded securely via ImgBB."}
           </p>
         </div>
 
@@ -312,6 +339,7 @@ export function PostTuitionForm({
             required
             maxLength={2000}
             rows={4}
+            defaultValue={tuition?.description}
             placeholder="Describe your batch..."
             className="w-full resize-y rounded-lg border border-line bg-white px-4 py-3 text-[15px] text-ink transition-[border-color,box-shadow] outline-none placeholder:text-ink-soft/60 focus-visible:border-forest/60 focus-visible:ring-3 focus-visible:ring-forest/15"
           />
@@ -336,7 +364,9 @@ export function PostTuitionForm({
               ? bannerFile
                 ? "Uploading and submitting..."
                 : "Submitting..."
-              : "Submit for Approval"}
+              : isEditing
+                ? "Save Changes for Review"
+                : "Submit for Approval"}
           </Button>
         </div>
       </form>

@@ -42,6 +42,13 @@ export type NewTuitionInput = {
   bannerImage: string | null
 }
 
+export type TutorTuition = NewTuitionInput & {
+  id: string
+  approvalStatus: "pending" | "approved" | "rejected"
+  isActive: boolean
+  createdAt: string
+}
+
 export type TutorPostUsage = {
   plan: "free" | "pro"
   postsUsed: number
