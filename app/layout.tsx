@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MentorLagbe — Find your ideal tutor",
   description:
-    "Find verified tutors for online and home tuition. Search by subject, class level and budget, then apply in minutes.",
+    "Browse admin-reviewed tuition listings. Search by subject, class level and budget, then apply in minutes.",
 }
 
 export default function RootLayout({

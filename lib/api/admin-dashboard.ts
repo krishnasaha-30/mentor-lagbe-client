@@ -3,6 +3,11 @@ export type AdminDashboardSummary = {
   totalTutors: number
   pendingTuitions: number
   approvedTuitions: number
+  revenue: {
+    currency: string
+    amountMinor: number
+    paymentCount: number
+  }[]
 }
 
 const API_BASE_URL =
@@ -15,12 +20,25 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function isAdminDashboardSummary(
   value: unknown
 ): value is AdminDashboardSummary {
+  const isRevenueTotal = (total: unknown) =>
+    isRecord(total) &&
+    typeof total.currency === "string" &&
+    /^[a-z]{3}$/i.test(total.currency) &&
+    typeof total.amountMinor === "number" &&
+    Number.isSafeInteger(total.amountMinor) &&
+    total.amountMinor >= 0 &&
+    typeof total.paymentCount === "number" &&
+    Number.isSafeInteger(total.paymentCount) &&
+    total.paymentCount > 0
+
   return (
     isRecord(value) &&
     Number.isSafeInteger(value.totalUsers) &&
     Number.isSafeInteger(value.totalTutors) &&
     Number.isSafeInteger(value.pendingTuitions) &&
-    Number.isSafeInteger(value.approvedTuitions)
+    Number.isSafeInteger(value.approvedTuitions) &&
+    Array.isArray(value.revenue) &&
+    value.revenue.every(isRevenueTotal)
   )
 }
 

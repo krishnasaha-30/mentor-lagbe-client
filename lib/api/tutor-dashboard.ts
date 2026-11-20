@@ -4,7 +4,7 @@ export type TutorDashboardSummary = {
   applicantsCount: number
   latestApplicants: {
     id: string
-    student: { name: string; image: string | null } | null
+    student: { name: string; image: string | null; plan: "free" | "pro" } | null
     tuitionTitle: string
     status: "pending" | "accepted" | "rejected"
   }[]
@@ -36,7 +36,8 @@ function isTutorDashboardSummary(
         student === null ||
         (isRecord(student) &&
           typeof student.name === "string" &&
-          (typeof student.image === "string" || student.image === null))
+          (typeof student.image === "string" || student.image === null) &&
+          (student.plan === "free" || student.plan === "pro"))
 
       return (
         typeof application.id === "string" &&

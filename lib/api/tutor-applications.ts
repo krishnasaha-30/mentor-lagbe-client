@@ -9,6 +9,7 @@ export type TutorApplication = {
     name: string
     email: string
     image: string | null
+    plan: "free" | "pro"
   } | null
   tuition: {
     id: string
@@ -36,7 +37,8 @@ function isTutorApplication(value: unknown): value is TutorApplication {
     (isRecord(student) &&
       typeof student.name === "string" &&
       typeof student.email === "string" &&
-      (typeof student.image === "string" || student.image === null))
+      (typeof student.image === "string" || student.image === null) &&
+      (student.plan === "free" || student.plan === "pro"))
   const validTuition =
     tuition === null ||
     (isRecord(tuition) &&

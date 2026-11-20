@@ -25,10 +25,7 @@ export function BannerIllustration() {
 
         {/* Tutor silhouette behind the laptop */}
         <circle cx="180" cy="178" r="30" fill="var(--sun)" />
-        <path
-          d="M128 266c0-38 23-66 52-66s52 28 52 66z"
-          fill="var(--lilac)"
-        />
+        <path d="M128 266c0-38 23-66 52-66s52 28 52 66z" fill="var(--lilac)" />
 
         {/* Laptop screen */}
         <rect
@@ -43,14 +40,35 @@ export function BannerIllustration() {
         />
 
         {/* Screen content */}
-        <rect x="232" y="126" width="86" height="10" rx="5" fill="var(--forest)" />
+        <rect
+          x="232"
+          y="126"
+          width="86"
+          height="10"
+          rx="5"
+          fill="var(--forest)"
+        />
         <rect x="232" y="150" width="158" height="8" rx="4" fill="#ded7c7" />
         <rect x="232" y="168" width="126" height="8" rx="4" fill="#ded7c7" />
-        <rect x="232" y="196" width="62" height="20" rx="10" fill="var(--coral)" />
+        <rect
+          x="232"
+          y="196"
+          width="62"
+          height="20"
+          rx="10"
+          fill="var(--coral)"
+        />
         <rect x="304" y="202" width="76" height="7" rx="3.5" fill="#e6b7a4" />
 
         {/* Laptop base */}
-        <rect x="170" y="264" width="322" height="16" rx="8" fill="var(--forest)" />
+        <rect
+          x="170"
+          y="264"
+          width="322"
+          height="16"
+          rx="8"
+          fill="var(--forest)"
+        />
         <rect
           x="300"
           y="268"
@@ -78,7 +96,7 @@ export function BannerIllustration() {
         <span className="grid size-4 place-items-center rounded-full bg-forest text-white">
           <Check className="size-2.5" strokeWidth={3} />
         </span>
-        Verified tutor
+        Approved listing
       </div>
     </div>
   )

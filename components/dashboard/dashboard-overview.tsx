@@ -1,5 +1,6 @@
 import Link from "next/link"
 
+import { SubscriptionAction } from "@/components/billing/subscription-action"
 import { DataRow, DataTable } from "@/components/dashboard/data-table"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { StatusBadge } from "@/components/dashboard/status-badge"
@@ -7,6 +8,7 @@ import { UserAvatar } from "@/components/ui/user-avatar"
 import type { AdminDashboardSummary } from "@/lib/api/admin-dashboard"
 import type { TutorDashboardSummary } from "@/lib/api/tutor-dashboard"
 import type { DashboardRole } from "@/lib/dashboard/nav"
+import { formatMinorCurrencyAmount } from "@/lib/format-currency"
 
 type StudentDashboardApplications = {
   total: number
@@ -26,7 +28,12 @@ const overviewContent: Record<
   {
     description: string
     sectionHeading: string
-    features: { title: string; description: string; href?: string }[]
+    features: {
+      title: string
+      description: string
+      href?: string
+      linkLabel?: string
+    }[]
   }
 > = {
   student: {
@@ -47,7 +54,7 @@ const overviewContent: Record<
       {
         title: "Upgrade when ready",
         description:
-          "Pro Student includes priority booking for your next tuition.",
+          "Pro Student applications appear higher in tutor lists, while tutors make the final selection.",
       },
     ],
   },
@@ -82,6 +89,7 @@ const overviewContent: Record<
         description:
           "Approve or reject submitted tuitions before they appear publicly.",
         href: "/dashboard/admin/tuitions",
+        linkLabel: "Review submissions",
       },
       {
         title: "Manage users",
@@ -90,6 +98,8 @@ const overviewContent: Record<
       {
         title: "Review transactions",
         description: "Keep track of paid subscriptions and platform revenue.",
+        href: "/dashboard/admin/transactions",
+        linkLabel: "View transactions",
       },
     ],
   },
@@ -127,7 +137,6 @@ export function DashboardOverview({
       />
     )
   }
-
   if (role === "tutor") {
     return (
       <TutorDashboardOverview
@@ -189,6 +198,14 @@ function StudentDashboardOverview({
           tone="lilac"
         />
       </section>
+
+      <div className="mt-4 flex justify-end">
+        <SubscriptionAction
+          requiredRole="student"
+          subscribeLabel="Upgrade to Pro"
+          className="inline-flex h-9 items-center rounded-full bg-ink px-4 text-xs font-semibold text-white transition-colors hover:bg-forest disabled:cursor-wait disabled:opacity-70"
+        />
+      </div>
 
       <section className="mt-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -295,6 +312,14 @@ function TutorDashboardOverview({
         />
       </section>
 
+      <div className="mt-4 flex justify-end">
+        <SubscriptionAction
+          requiredRole="tutor"
+          subscribeLabel="Upgrade to Pro"
+          className="inline-flex h-9 items-center rounded-full bg-ink px-4 text-xs font-semibold text-white transition-colors hover:bg-forest disabled:cursor-wait disabled:opacity-70"
+        />
+      </div>
+
       <section className="mt-6">
         <h2 className="mb-3 font-display text-xl font-bold text-ink">
           Latest applicants
@@ -322,9 +347,16 @@ function TutorDashboardOverview({
                         image={application.student.image}
                         size="sm"
                       />
-                      <span className="max-w-40 truncate">
-                        {application.student.name}
-                      </span>
+                      <div className="flex min-w-0 items-center gap-1.5">
+                        <span className="max-w-40 truncate">
+                          {application.student.name}
+                        </span>
+                        {application.student.plan === "pro" ? (
+                          <span className="shrink-0 rounded-full bg-stat-butter px-2 py-0.5 text-[10px] font-semibold text-ink">
+                            Pro
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
                   ) : (
                     <span className="text-ink-soft">Student unavailable</span>
@@ -360,6 +392,16 @@ function AdminDashboardOverview({
 }) {
   const content = overviewContent.admin
   const firstName = name.trim().split(/\s+/)[0] || name
+  const revenueValue = dashboardError
+    ? "—"
+    : dashboard?.revenue.length === 1
+      ? formatMinorCurrencyAmount(
+          dashboard.revenue[0].amountMinor,
+          dashboard.revenue[0].currency
+        )
+      : dashboard?.revenue.length
+        ? `${dashboard.revenue.length} currencies`
+        : "$0.00"
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
@@ -398,25 +440,58 @@ function AdminDashboardOverview({
           }
           tone="peach"
         />
-        <StatCard label="Stripe Revenue" value="N/A" tone="lilac" />
+        <StatCard label="Stripe Revenue" value={revenueValue} tone="lilac" />
       </section>
 
       <section className="mt-6 rounded-[20px] border border-line bg-white p-6 sm:p-8">
         <h2 className="font-display text-xl font-bold text-ink">
-          Monthly revenue
+          Paid subscription revenue
         </h2>
-        <div
-          role="status"
-          className="mt-5 flex min-h-32 items-center justify-center rounded-xl bg-cream-soft px-5 py-8 text-center text-sm leading-6 text-ink-soft"
-        >
-          Stripe payment tracking is not connected yet. Revenue data will appear
-          here once paid transactions are recorded.
-        </div>
+        <p className="mt-2 text-sm leading-6 text-ink-soft">
+          Gross paid invoice totals grouped by currency. Refunds and Stripe fees
+          are not deducted.
+        </p>
         {dashboardError ? (
-          <p role="alert" className="mt-4 text-sm text-coral-dark">
+          <div
+            role="alert"
+            className="mt-5 rounded-xl border border-coral/40 bg-cream-soft px-5 py-8 text-center text-sm text-coral-dark"
+          >
             Platform statistics could not be loaded.
-          </p>
-        ) : null}
+          </div>
+        ) : dashboard?.revenue.length ? (
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+            {dashboard.revenue.map((total) => (
+              <li
+                key={total.currency}
+                className="rounded-xl bg-cream-soft px-5 py-4"
+              >
+                <p className="text-2xl font-bold text-ink">
+                  {formatMinorCurrencyAmount(
+                    total.amountMinor,
+                    total.currency
+                  )}
+                </p>
+                <p className="mt-1 text-xs text-ink-soft">
+                  {total.paymentCount} paid{" "}
+                  {total.paymentCount === 1 ? "invoice" : "invoices"}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div
+            role="status"
+            className="mt-5 rounded-xl bg-cream-soft px-5 py-8 text-center text-sm text-ink-soft"
+          >
+            No paid subscription invoices have been recorded yet.
+          </div>
+        )}
+        <Link
+          href="/dashboard/admin/transactions"
+          className="mt-5 inline-flex text-sm font-semibold text-forest underline-offset-4 hover:underline"
+        >
+          View transactions
+        </Link>
       </section>
 
       <section className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
@@ -439,7 +514,7 @@ function AdminDashboardOverview({
                     href={feature.href}
                     className="mt-4 inline-flex text-sm font-semibold text-forest underline-offset-4 hover:underline"
                   >
-                    Review submissions
+                    {feature.linkLabel ?? "Open"}
                   </Link>
                 ) : null}
               </article>

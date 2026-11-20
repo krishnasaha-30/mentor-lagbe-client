@@ -143,9 +143,16 @@ export function TutorApplicants() {
                       size="sm"
                     />
                     <div className="min-w-0">
-                      <p className="max-w-36 truncate font-medium text-ink">
-                        {application.student.name}
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="max-w-36 truncate font-medium text-ink">
+                          {application.student.name}
+                        </p>
+                        {application.student.plan === "pro" ? (
+                          <span className="shrink-0 rounded-full bg-stat-butter px-2 py-0.5 text-[10px] font-semibold text-ink">
+                            Pro Student
+                          </span>
+                        ) : null}
+                      </div>
                       <a
                         href={`mailto:${application.student.email}`}
                         className="block max-w-36 truncate text-xs text-ink-soft hover:underline"
