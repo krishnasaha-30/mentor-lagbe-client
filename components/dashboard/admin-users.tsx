@@ -1,8 +1,12 @@
 "use client"
 
+import { RotateCw, Users } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
+import { DataRow, DataTable } from "@/components/dashboard/data-table"
+import { EmptyState } from "@/components/dashboard/empty-state"
+import { TableSkeleton } from "@/components/dashboard/table-skeleton"
 import { Button } from "@/components/ui/button"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import {
@@ -102,130 +106,122 @@ export function AdminUsers() {
     )
   }
 
-  if (userList.status === "loading" || sessionPending) {
-    return (
-      <div
-        role="status"
-        className="rounded-[20px] border border-line bg-white px-6 py-14 text-center text-sm text-ink-soft"
-      >
-        Loading users...
-      </div>
-    )
-  }
-
-  if (userList.status === "error") {
-    return (
-      <div
-        role="alert"
-        className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center"
-      >
-        <p className="text-sm text-ink">{userList.message}</p>
+  return (
+    <div className="mx-auto max-w-[1200px] pb-8">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-ink-soft">
+          {userList.status === "ready"
+            ? `${userList.users.length} ${
+                userList.users.length === 1 ? "account" : "accounts"
+              }`
+            : "Platform accounts"}
+        </p>
         <Button
           type="button"
+          variant="outline"
           onClick={refreshUsers}
-          className="mt-4 h-10 rounded-full bg-coral px-5 text-ink hover:bg-coral-dark"
+          disabled={userList.status === "loading" || sessionPending}
+          className="h-10 gap-2 rounded-full border-line bg-white px-4 text-ink"
         >
-          Try again
+          <RotateCw aria-hidden="true" className="size-4" />
+          Refresh
         </Button>
       </div>
-    )
-  }
 
-  return (
-    <section
-      aria-label="User management"
-      className="overflow-hidden rounded-[20px] border border-line bg-white px-5 sm:px-6"
-    >
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[680px] border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-line text-xs font-semibold tracking-[0.08em] text-ink-soft uppercase">
-              <th scope="col" className="py-5 pr-5">
-                User
-              </th>
-              <th scope="col" className="px-5 py-5">
-                Role
-              </th>
-              <th scope="col" className="px-5 py-5">
-                Plan
-              </th>
-              <th scope="col" className="py-5 pl-5 text-right">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {userList.users.map((user) => {
-              const isEditing = editingId === user.id
-              const isSaving = savingId === user.id
+      {sessionPending || userList.status === "loading" ? (
+        <TableSkeleton columns={4} />
+      ) : userList.status === "error" ? (
+        <div
+          role="alert"
+          className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center"
+        >
+          <p className="text-sm text-ink">{userList.message}</p>
+          <button
+            type="button"
+            onClick={refreshUsers}
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-semibold text-forest hover:bg-cream-soft"
+          >
+            <RotateCw aria-hidden="true" className="size-4" />
+            Try again
+          </button>
+        </div>
+      ) : userList.users.length === 0 ? (
+        <EmptyState
+          icon={Users}
+          title="No accounts yet"
+          description="Student and tutor accounts will appear here after they sign up."
+        />
+      ) : (
+        <DataTable columns={["User", "Role", "Plan", "Actions"]}>
+          {userList.users.map((user) => {
+            const isEditing = editingId === user.id
+            const isSaving = savingId === user.id
 
-              return (
-                <tr
-                  key={user.id}
-                  className="border-b border-line last:border-b-0"
-                >
-                  <td className="py-3.5 pr-5">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <UserAvatar
-                        name={user.name}
-                        image={user.image}
-                        size="sm"
-                      />
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-ink">
-                          {user.name}
-                        </p>
-                        <p className="truncate text-xs text-ink-soft">
-                          {user.email}
-                        </p>
-                      </div>
+            return (
+              <DataRow key={user.id}>
+                <td className="px-5 py-4 sm:px-6">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <UserAvatar
+                      name={user.name}
+                      image={user.image}
+                      size="sm"
+                    />
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-ink">
+                        {user.name}
+                      </p>
+                      <p className="truncate text-xs text-ink-soft">
+                        {user.email}
+                      </p>
                     </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-ink">
-                    {user.role === "student" ? "Student" : "Tutor"}
-                  </td>
-                  <td className="px-5 py-3.5 text-ink">
-                    {user.plan === "pro" ? "Pro" : "Free"}
-                  </td>
-                  <td className="py-3.5 pl-5 text-right">
-                    {isEditing ? (
-                      <div className="flex flex-wrap items-center justify-end gap-2">
-                        <label className="sr-only" htmlFor={`role-${user.id}`}>
-                          New role for {user.name}
-                        </label>
-                        <select
-                          id={`role-${user.id}`}
-                          value={selectedRole}
-                          onChange={(event) =>
-                            setSelectedRole(
-                              event.target.value as AdminUser["role"]
-                            )
-                          }
-                          disabled={isSaving}
-                          className="h-9 rounded-full border border-line bg-white px-3 text-sm text-ink outline-none focus-visible:ring-2 focus-visible:ring-forest"
-                        >
-                          <option value="student">Student</option>
-                          <option value="tutor">Tutor</option>
-                        </select>
-                        <Button
-                          type="button"
-                          onClick={() => saveRole(user)}
-                          disabled={isSaving || selectedRole === user.role}
-                          className="h-9 rounded-full bg-forest px-4 text-white hover:bg-forest/90"
-                        >
-                          {isSaving ? "Saving..." : "Save"}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setEditingId(null)}
-                          disabled={isSaving}
-                          className="h-9 rounded-full border-line px-4 text-ink"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    ) : (
+                  </div>
+                </td>
+                <td className="px-5 py-4 text-ink sm:px-6">
+                  {user.role === "student" ? "Student" : "Tutor"}
+                </td>
+                <td className="px-5 py-4 text-ink sm:px-6">
+                  {user.plan === "pro" ? "Pro" : "Free"}
+                </td>
+                <td className="px-5 py-4 sm:px-6">
+                  {isEditing ? (
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                      <label className="sr-only" htmlFor={`role-${user.id}`}>
+                        New role for {user.name}
+                      </label>
+                      <select
+                        id={`role-${user.id}`}
+                        value={selectedRole}
+                        onChange={(event) =>
+                          setSelectedRole(
+                            event.target.value as AdminUser["role"]
+                          )
+                        }
+                        disabled={isSaving}
+                        className="h-9 rounded-full border border-line bg-white px-3 text-sm text-ink outline-none focus-visible:ring-2 focus-visible:ring-forest"
+                      >
+                        <option value="student">Student</option>
+                        <option value="tutor">Tutor</option>
+                      </select>
+                      <Button
+                        type="button"
+                        onClick={() => saveRole(user)}
+                        disabled={isSaving || selectedRole === user.role}
+                        className="h-9 rounded-full bg-forest px-4 text-white hover:bg-forest/90"
+                      >
+                        {isSaving ? "Saving..." : "Save"}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setEditingId(null)}
+                        disabled={isSaving}
+                        className="h-9 rounded-full border-line px-4 text-ink"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-right">
                       <Button
                         type="button"
                         variant="outline"
@@ -235,19 +231,14 @@ export function AdminUsers() {
                       >
                         Change role
                       </Button>
-                    )}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
-      {userList.users.length === 0 ? (
-        <p className="py-10 text-center text-sm text-ink-soft">
-          No student or tutor accounts found.
-        </p>
-      ) : null}
-    </section>
+                    </div>
+                  )}
+                </td>
+              </DataRow>
+            )
+          })}
+        </DataTable>
+      )}
+    </div>
   )
 }

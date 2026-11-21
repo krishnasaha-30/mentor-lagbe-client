@@ -4,6 +4,7 @@ import { Check, ExternalLink, RotateCw, X } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
+import { EmptyState } from "@/components/dashboard/empty-state"
 import { Button } from "@/components/ui/button"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import {
@@ -113,18 +114,14 @@ export function AdminTuitionApprovals() {
 
   return (
     <div className="mx-auto max-w-[1100px] pb-8">
-      <section className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold tracking-[0.16em] text-forest uppercase">
-            Admin review
-          </p>
-          <h2 className="mt-2 font-display text-3xl font-bold tracking-[-0.02em] text-ink">
-            Tuition Approvals
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-ink-soft">
-            Review tutor submissions before they appear in Browse.
-          </p>
-        </div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-ink-soft">
+          {queue.status === "ready"
+            ? `${queue.tuitions.length} ${
+                queue.tuitions.length === 1 ? "submission" : "submissions"
+              } waiting for review`
+            : "Review queue"}
+        </p>
         <Button
           type="button"
           variant="outline"
@@ -135,7 +132,7 @@ export function AdminTuitionApprovals() {
           <RotateCw aria-hidden="true" />
           Refresh
         </Button>
-      </section>
+      </div>
 
       {!sessionPending && !token ? (
         <div
@@ -145,11 +142,30 @@ export function AdminTuitionApprovals() {
           Your session has expired. Please sign in again.
         </div>
       ) : queue.status === "loading" ? (
-        <div
-          role="status"
-          className="rounded-[20px] border border-line bg-white px-6 py-14 text-center text-sm text-ink-soft"
-        >
-          Loading pending tuition submissions...
+        <div role="status" aria-label="Loading" className="space-y-4">
+          {Array.from({ length: 2 }).map((_, index) => (
+            <div
+              key={index}
+              className="animate-pulse rounded-[20px] border border-line bg-white p-5 sm:p-6"
+            >
+              <div className="h-3 w-24 rounded-full bg-cream-soft" />
+              <div className="mt-4 h-5 w-2/3 rounded-full bg-cream-soft" />
+              <div className="mt-3 h-3 w-1/3 rounded-full bg-cream-soft" />
+              <div className="mt-5 space-y-2">
+                <div className="h-3 w-full rounded-full bg-cream-soft/80" />
+                <div className="h-3 w-5/6 rounded-full bg-cream-soft/80" />
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, cell) => (
+                  <div
+                    key={cell}
+                    className="h-8 rounded-lg bg-cream-soft/80"
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+          <span className="sr-only">Loading…</span>
         </div>
       ) : queue.status === "error" ? (
         <div
@@ -160,27 +176,19 @@ export function AdminTuitionApprovals() {
           <Button
             type="button"
             onClick={refreshQueue}
-            className="mt-4 h-10 rounded-full bg-coral px-5 text-ink hover:bg-coral-dark"
+            className="mt-4 h-10 rounded-full bg-coral px-5 text-white hover:bg-coral-dark"
           >
             Try again
           </Button>
         </div>
       ) : queue.tuitions.length === 0 ? (
-        <div className="rounded-[20px] border border-line bg-white px-6 py-14 text-center">
-          <h3 className="font-display text-xl font-bold text-ink">
-            You&apos;re all caught up
-          </h3>
-          <p className="mt-2 text-sm text-ink-soft">
-            There are no tuition submissions waiting for review.
-          </p>
-        </div>
+        <EmptyState
+          icon={Check}
+          title="You're all caught up"
+          description="There are no tuition submissions waiting for review."
+        />
       ) : (
         <div className="space-y-4">
-          <p className="text-sm font-medium text-ink-soft">
-            {queue.tuitions.length}{" "}
-            {queue.tuitions.length === 1 ? "submission" : "submissions"} waiting
-            for review
-          </p>
           {queue.tuitions.map((tuition) => (
             <article
               key={tuition.id}

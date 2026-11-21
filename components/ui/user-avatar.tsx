@@ -18,6 +18,7 @@ const sizes = {
   md: 32,
   lg: 40,
   xl: 56,
+  "2xl": 96,
 } as const
 
 type AvatarSize = keyof typeof sizes

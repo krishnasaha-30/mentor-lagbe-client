@@ -164,15 +164,35 @@ export function PostTuitionForm({
       {!isEditing && usage ? (
         <div
           role="status"
-          className={`mb-5 rounded-xl px-4 py-3 text-sm ${
-            usage.plan === "pro"
-              ? "bg-stat-mint text-forest"
-              : "bg-stat-butter text-ink"
+          className={`mb-5 rounded-xl px-4 py-3.5 ${
+            usage.plan === "pro" ? "bg-stat-mint" : "bg-stat-butter"
           }`}
         >
-          {usage.plan === "pro"
-            ? "Pro plan: unlimited tuition posts."
-            : `Free plan: ${usage.postsUsed} of 2 posts used.`}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[11px] font-bold tracking-[0.14em] text-ink/70 uppercase">
+              {usage.plan === "pro" ? "Pro plan" : "Free plan"}
+            </p>
+            <p className="text-xs font-semibold text-ink/70">
+              {usage.plan === "pro"
+                ? "Unlimited posts"
+                : `${usage.postsUsed} of 2 posts used`}
+            </p>
+          </div>
+          <p className="mt-1 text-sm text-ink">
+            {usage.plan === "pro"
+              ? "You can publish as many tuitions as you like."
+              : "Your first two tuition posts are included."}
+          </p>
+          {usage.plan === "free" ? (
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/60">
+              <div
+                className="h-full rounded-full bg-forest transition-[width]"
+                style={{
+                  width: `${Math.min(100, (usage.postsUsed / 2) * 100)}%`,
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       ) : !isEditing && usageError ? (
         <p
@@ -198,6 +218,10 @@ export function PostTuitionForm({
         onSubmit={handleSubmit}
         className="grid gap-x-3 gap-y-4 sm:grid-cols-2"
       >
+        <p className="text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+          Tuition details
+        </p>
+
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="title">Title</Label>
           <Input
@@ -284,6 +308,10 @@ export function PostTuitionForm({
           />
         </div>
 
+        <p className="mt-2 border-t border-line pt-5 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+          Schedule &amp; fee
+        </p>
+
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="monthlyFee">Monthly fee (৳)</Label>
           <Input
@@ -312,6 +340,10 @@ export function PostTuitionForm({
             defaultValue={tuition?.daysPerWeek ?? 3}
           />
         </div>
+
+        <p className="mt-2 border-t border-line pt-5 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+          Banner &amp; description
+        </p>
 
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="bannerImage">Banner image</Label>

@@ -68,7 +68,7 @@ export function DashboardShell({
         />
         <div
           className={cn(
-            "absolute inset-y-0 left-0 w-[260px] shadow-2xl transition-transform duration-300",
+            "absolute inset-y-0 left-0 w-[min(260px,calc(100vw-1rem))] shadow-2xl transition-transform duration-300",
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
@@ -92,8 +92,8 @@ export function DashboardShell({
           image={user.image}
           onToggleSidebar={handleToggle}
         />
-        <main className="flex-1 px-4 pb-12 sm:px-7 lg:px-8">
-          <div key={pathname} className="dashboard-page-enter">
+        <main className="min-w-0 flex-1 px-3 pb-10 sm:px-6 sm:pb-12 lg:px-8">
+          <div key={pathname} className="dashboard-page-enter min-w-0">
             {children}
           </div>
         </main>

@@ -1,6 +1,18 @@
+import Image from "next/image"
 import Link from "next/link"
+import {
+  ArrowRight,
+  BookOpenCheck,
+  CheckCircle2,
+  ClipboardCheck,
+  Clock3,
+  Crown,
+  GraduationCap,
+  Receipt,
+  Users,
+  UsersRound,
+} from "lucide-react"
 
-import { SubscriptionAction } from "@/components/billing/subscription-action"
 import { DataRow, DataTable } from "@/components/dashboard/data-table"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { StatusBadge } from "@/components/dashboard/status-badge"
@@ -94,6 +106,8 @@ const overviewContent: Record<
       {
         title: "Manage users",
         description: "Review accounts and update user roles when needed.",
+        href: "/dashboard/admin/users",
+        linkLabel: "Manage users",
       },
       {
         title: "Review transactions",
@@ -105,9 +119,75 @@ const overviewContent: Record<
   },
 }
 
+const welcomeContent: Record<
+  DashboardRole,
+  { title: string; description: string; image: string; imageAlt: string }
+> = {
+  student: {
+    title: "Make learning progress, one connection at a time.",
+    description:
+      "Find a tutor who fits your goals and follow your applications from one place.",
+    image: "/photos/student-learning.jpg",
+    imageAlt: "Student studying at a desk",
+  },
+  tutor: {
+    title: "Bring your expertise to students who need it.",
+    description:
+      "Share your tuition listings, connect with learners, and manage applications.",
+    image: "/photos/tutor-teaching.jpg",
+    imageAlt: "Tutor helping a student learn",
+  },
+  admin: {
+    title: "Keep the learning community moving forward.",
+    description:
+      "Review listings, support users, and keep track of platform activity.",
+    image: "/photos/classroom.jpg",
+    imageAlt: "Students learning together in a classroom",
+  },
+}
+
+function DashboardWelcome({ role }: { role: DashboardRole }) {
+  const content = welcomeContent[role]
+  const Icon =
+    role === "student"
+      ? GraduationCap
+      : role === "tutor"
+        ? BookOpenCheck
+        : UsersRound
+
+  return (
+    <section className="mb-4 grid overflow-hidden rounded-[20px] border border-line bg-white md:grid-cols-[minmax(0,1fr)_220px]">
+      <div className="flex items-start gap-3 p-4 sm:p-5">
+        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-stat-mint text-forest">
+          <Icon aria-hidden="true" className="size-[18px]" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold tracking-[0.12em] text-forest uppercase">
+            Welcome to your {role} workspace
+          </p>
+          <h2 className="mt-1 font-display text-lg leading-snug font-bold tracking-[-0.02em] text-ink sm:text-xl">
+            {content.title}
+          </h2>
+          <p className="mt-1.5 max-w-2xl text-xs leading-5 text-ink-soft sm:text-sm">
+            {content.description}
+          </p>
+        </div>
+      </div>
+      <div className="relative min-h-[112px] md:min-h-[150px]">
+        <Image
+          src={content.image}
+          alt={content.imageAlt}
+          fill
+          sizes="(min-width: 768px) 220px, 100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/20 to-transparent md:bg-gradient-to-l md:from-transparent md:to-white/10" />
+      </div>
+    </section>
+  )
+}
+
 export function DashboardOverview({
-  name,
-  email,
   role,
   plan,
   studentApplications,
@@ -117,8 +197,6 @@ export function DashboardOverview({
   adminDashboard,
   adminDashboardError,
 }: {
-  name: string
-  email: string
   role: DashboardRole
   plan: "free" | "pro"
   studentApplications: StudentDashboardApplications | null
@@ -150,9 +228,6 @@ export function DashboardOverview({
   if (role === "admin") {
     return (
       <AdminDashboardOverview
-        name={name}
-        email={email}
-        plan={plan}
         dashboard={adminDashboard}
         dashboardError={adminDashboardError}
       />
@@ -173,6 +248,7 @@ function StudentDashboardOverview({
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
+      <DashboardWelcome role="student" />
       <section
         aria-label="Application summary"
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
@@ -181,31 +257,27 @@ function StudentDashboardOverview({
           label="Total Applied"
           value={statUnavailable ? "—" : (applications?.total ?? 0)}
           tone="mint"
+          icon={BookOpenCheck}
         />
         <StatCard
           label="Accepted"
           value={statUnavailable ? "—" : (applications?.accepted ?? 0)}
           tone="butter"
+          icon={CheckCircle2}
         />
         <StatCard
           label="Pending"
           value={statUnavailable ? "—" : (applications?.pending ?? 0)}
           tone="peach"
+          icon={Clock3}
         />
         <StatCard
           label="Plan"
           value={plan === "pro" ? "Pro" : "Free"}
           tone="lilac"
+          icon={Crown}
         />
       </section>
-
-      <div className="mt-4 flex justify-end">
-        <SubscriptionAction
-          requiredRole="student"
-          subscribeLabel="Upgrade to Pro"
-          className="inline-flex h-9 items-center rounded-full bg-ink px-4 text-xs font-semibold text-white transition-colors hover:bg-forest disabled:cursor-wait disabled:opacity-70"
-        />
-      </div>
 
       <section className="mt-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -286,6 +358,7 @@ function TutorDashboardOverview({
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
+      <DashboardWelcome role="tutor" />
       <section
         aria-label="Tutor activity summary"
         className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
@@ -294,36 +367,40 @@ function TutorDashboardOverview({
           label="Tuitions Posted"
           value={statUnavailable ? "—" : (dashboard?.tuitionsPosted ?? 0)}
           tone="mint"
+          icon={BookOpenCheck}
         />
         <StatCard
           label="Active / Approved"
           value={statUnavailable ? "—" : (dashboard?.activeApproved ?? 0)}
           tone="butter"
+          icon={CheckCircle2}
         />
         <StatCard
           label="Applicants"
           value={statUnavailable ? "—" : (dashboard?.applicantsCount ?? 0)}
           tone="peach"
+          icon={UsersRound}
         />
         <StatCard
           label="Plan"
           value={plan === "pro" ? "Pro" : "Free"}
           tone="lilac"
+          icon={Crown}
         />
       </section>
 
-      <div className="mt-4 flex justify-end">
-        <SubscriptionAction
-          requiredRole="tutor"
-          subscribeLabel="Upgrade to Pro"
-          className="inline-flex h-9 items-center rounded-full bg-ink px-4 text-xs font-semibold text-white transition-colors hover:bg-forest disabled:cursor-wait disabled:opacity-70"
-        />
-      </div>
-
       <section className="mt-6">
-        <h2 className="mb-3 font-display text-xl font-bold text-ink">
-          Latest applicants
-        </h2>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="font-display text-xl font-bold text-ink">
+            Latest applicants
+          </h2>
+          <Link
+            href="/dashboard/applicants"
+            className="text-sm font-semibold text-forest underline-offset-4 hover:underline"
+          >
+            View all
+          </Link>
+        </div>
         {dashboardError ? (
           <div
             role="alert"
@@ -378,20 +455,14 @@ function TutorDashboardOverview({
 }
 
 function AdminDashboardOverview({
-  name,
-  email,
-  plan,
   dashboard,
   dashboardError,
 }: {
-  name: string
-  email: string
-  plan: "free" | "pro"
   dashboard: AdminDashboardSummary | null
   dashboardError: boolean
 }) {
   const content = overviewContent.admin
-  const firstName = name.trim().split(/\s+/)[0] || name
+  const quickActionIcons = [ClipboardCheck, Users, Receipt]
   const revenueValue = dashboardError
     ? "—"
     : dashboard?.revenue.length === 1
@@ -405,31 +476,22 @@ function AdminDashboardOverview({
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
-      <section className="rounded-[20px] border border-line bg-white p-6 sm:p-8">
-        <p className="text-xs font-semibold tracking-[0.16em] text-forest uppercase">
-          Admin dashboard
-        </p>
-        <h2 className="mt-3 font-display text-3xl leading-tight font-bold tracking-[-0.02em] text-ink sm:text-4xl">
-          Welcome back, {firstName}
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-soft sm:text-base">
-          {content.description}
-        </p>
-      </section>
-
+      <DashboardWelcome role="admin" />
       <section
         aria-label="Platform summary"
-        className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+        className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
       >
         <StatCard
           label="Total Users"
           value={dashboardError ? "—" : (dashboard?.totalUsers ?? 0)}
           tone="mint"
+          icon={Users}
         />
         <StatCard
           label="Total Tutors"
           value={dashboardError ? "—" : (dashboard?.totalTutors ?? 0)}
           tone="butter"
+          icon={GraduationCap}
         />
         <StatCard
           label="Pending / Approved"
@@ -439,109 +501,106 @@ function AdminDashboardOverview({
               : `${dashboard?.pendingTuitions ?? 0} / ${dashboard?.approvedTuitions ?? 0}`
           }
           tone="peach"
+          icon={ClipboardCheck}
         />
-        <StatCard label="Stripe Revenue" value={revenueValue} tone="lilac" />
+        <StatCard
+          label="Stripe Revenue"
+          value={revenueValue}
+          tone="lilac"
+          icon={Receipt}
+        />
       </section>
 
-      <section className="mt-6 rounded-[20px] border border-line bg-white p-6 sm:p-8">
-        <h2 className="font-display text-xl font-bold text-ink">
-          Paid subscription revenue
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-ink-soft">
-          Gross paid invoice totals grouped by currency. Refunds and Stripe fees
-          are not deducted.
-        </p>
-        {dashboardError ? (
-          <div
-            role="alert"
-            className="mt-5 rounded-xl border border-coral/40 bg-cream-soft px-5 py-8 text-center text-sm text-coral-dark"
-          >
-            Platform statistics could not be loaded.
+      <section className="mt-4 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <div className="rounded-[20px] border border-line bg-white p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-display text-xl font-bold text-ink">
+              Paid subscription revenue
+            </h2>
+            <Link
+              href="/dashboard/admin/transactions"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-forest hover:underline"
+            >
+              View all
+              <ArrowRight aria-hidden="true" className="size-3.5" />
+            </Link>
           </div>
-        ) : dashboard?.revenue.length ? (
-          <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-            {dashboard.revenue.map((total) => (
-              <li
-                key={total.currency}
-                className="rounded-xl bg-cream-soft px-5 py-4"
-              >
-                <p className="text-2xl font-bold text-ink">
-                  {formatMinorCurrencyAmount(
-                    total.amountMinor,
-                    total.currency
-                  )}
-                </p>
-                <p className="mt-1 text-xs text-ink-soft">
-                  {total.paymentCount} paid{" "}
-                  {total.paymentCount === 1 ? "invoice" : "invoices"}
-                </p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div
-            role="status"
-            className="mt-5 rounded-xl bg-cream-soft px-5 py-8 text-center text-sm text-ink-soft"
-          >
-            No paid subscription invoices have been recorded yet.
-          </div>
-        )}
-        <Link
-          href="/dashboard/admin/transactions"
-          className="mt-5 inline-flex text-sm font-semibold text-forest underline-offset-4 hover:underline"
-        >
-          View transactions
-        </Link>
-      </section>
+          <p className="mt-2 text-xs leading-5 text-ink-soft">
+            Gross paid invoice totals grouped by currency. Refunds and Stripe
+            fees are not deducted.
+          </p>
 
-      <section className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div>
-          <h3 className="font-display text-xl font-bold text-ink">
-            {content.sectionHeading}
-          </h3>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {content.features.map((feature) => (
-              <article
-                key={feature.title}
-                className="rounded-[20px] border border-line bg-white p-5"
-              >
-                <h4 className="font-semibold text-ink">{feature.title}</h4>
-                <p className="mt-2 text-sm leading-6 text-ink-soft">
-                  {feature.description}
-                </p>
-                {feature.href ? (
-                  <Link
-                    href={feature.href}
-                    className="mt-4 inline-flex text-sm font-semibold text-forest underline-offset-4 hover:underline"
-                  >
-                    {feature.linkLabel ?? "Open"}
-                  </Link>
-                ) : null}
-              </article>
-            ))}
-          </div>
+          {dashboardError ? (
+            <div
+              role="alert"
+              className="mt-5 rounded-xl border border-coral/40 bg-cream-soft px-5 py-8 text-center text-sm text-coral-dark"
+            >
+              Platform statistics could not be loaded.
+            </div>
+          ) : dashboard?.revenue.length ? (
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+              {dashboard.revenue.map((total) => (
+                <li
+                  key={total.currency}
+                  className="rounded-xl bg-cream-soft px-4 py-4"
+                >
+                  <p className="font-display text-2xl font-bold text-ink">
+                    {formatMinorCurrencyAmount(
+                      total.amountMinor,
+                      total.currency
+                    )}
+                  </p>
+                  <p className="mt-1 text-xs text-ink-soft">
+                    {total.paymentCount} paid{" "}
+                    {total.paymentCount === 1 ? "invoice" : "invoices"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div
+              role="status"
+              className="mt-5 rounded-xl bg-cream-soft px-5 py-8 text-center text-sm text-ink-soft"
+            >
+              No paid subscription invoices have been recorded yet.
+            </div>
+          )}
         </div>
 
-        <aside className="h-fit rounded-[20px] border border-line bg-white p-5">
-          <h3 className="font-display text-lg font-bold text-ink">
-            Your account
-          </h3>
-          <div className="mt-5 flex items-center gap-3">
-            <UserAvatar name={name} size="lg" />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-ink">{name}</p>
-              <p className="truncate text-xs text-ink-soft">{email}</p>
-            </div>
+        <div className="rounded-[20px] border border-line bg-white p-5 sm:p-6">
+          <h2 className="font-display text-xl font-bold text-ink">
+            Quick actions
+          </h2>
+          <div className="mt-4 space-y-2.5">
+            {content.features.map((feature, index) => {
+              const Icon = quickActionIcons[index % quickActionIcons.length]
+
+              return (
+                <Link
+                  key={feature.title}
+                  href={feature.href ?? "/dashboard"}
+                  className="group flex items-center gap-3 rounded-xl border border-line/70 bg-cream/40 px-3.5 py-3 transition-colors hover:border-forest/25 hover:bg-cream"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-forest shadow-sm">
+                    <Icon aria-hidden="true" className="size-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-ink">
+                      {feature.title}
+                    </span>
+                    <span className="block truncate text-xs text-ink-soft">
+                      {feature.description}
+                    </span>
+                  </span>
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-ink-soft transition-transform group-hover:translate-x-0.5"
+                  />
+                </Link>
+              )
+            })}
           </div>
-          <div className="mt-5 flex items-center justify-between border-t border-line pt-4 text-sm">
-            <span className="text-ink-soft">Role</span>
-            <span className="font-medium text-ink">Admin</span>
-          </div>
-          <div className="mt-3 flex items-center justify-between text-sm">
-            <span className="text-ink-soft">Plan</span>
-            <StatusBadge status={plan} />
-          </div>
-        </aside>
+        </div>
       </section>
     </div>
   )

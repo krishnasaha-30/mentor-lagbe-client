@@ -2,7 +2,17 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { House } from "lucide-react"
+import {
+  BookOpen,
+  ClipboardCheck,
+  FileCheck2,
+  House,
+  LayoutDashboard,
+  Receipt,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/logo"
@@ -11,6 +21,18 @@ import { authClient } from "@/lib/auth-client"
 import type { DashboardRole } from "@/lib/dashboard/nav"
 import { dashboardNav, getActiveHref, roleLabel } from "@/lib/dashboard/nav"
 import { cn } from "@/lib/utils"
+
+const navigationIcons: Record<string, LucideIcon> = {
+  "/dashboard": LayoutDashboard,
+  "/dashboard/applications": FileCheck2,
+  "/dashboard/profile": UserRound,
+  "/dashboard/tuitions/new": BookOpen,
+  "/dashboard/tuitions": BookOpen,
+  "/dashboard/applicants": Users,
+  "/dashboard/admin/users": Users,
+  "/dashboard/admin/tuitions": ClipboardCheck,
+  "/dashboard/admin/transactions": Receipt,
+}
 
 export type DashboardUser = {
   id: string
@@ -58,7 +80,7 @@ export function DashboardSidebar({
       <div className="mt-7 flex items-center gap-3 rounded-2xl bg-white/10 px-3 py-3">
         <UserAvatar name={user.name} image={user.image} size="lg" />
         <div className="min-w-0">
-          <p className="truncate text-[15px] font-semibold text-white">
+          <p className="truncate text-sm font-semibold text-white">
             {user.name}
           </p>
           <span className="mt-1 inline-flex rounded-full bg-butter px-2.5 py-[2px] text-[11px] font-semibold text-ink">
@@ -67,26 +89,10 @@ export function DashboardSidebar({
         </div>
       </div>
 
-      <nav className="mt-5" aria-label="Main navigation">
-        <Link
-          href="/"
-          onClick={onNavigate}
-          aria-current={pathname === "/" ? "page" : undefined}
-          className={cn(
-            "flex items-center gap-3 rounded-xl border-l-2 px-4 py-2.5 text-[15px] font-medium transition-colors",
-            pathname === "/"
-              ? "border-stat-butter bg-forest-active text-white"
-              : "border-transparent text-white/85 hover:bg-white/10 hover:text-white"
-          )}
-        >
-          <House aria-hidden="true" className="size-4" />
-          Homepage
-        </Link>
-      </nav>
-
-      <nav className="mt-5 flex flex-1 flex-col gap-1" aria-label="Dashboard">
+      <nav className="mt-6 flex flex-1 flex-col gap-1" aria-label="Dashboard">
         {items.map((item) => {
           const isActive = item.href === activeHref
+          const Icon = navigationIcons[item.href]
 
           return (
             <Link
@@ -95,25 +101,38 @@ export function DashboardSidebar({
               onClick={onNavigate}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "rounded-xl border-l-2 px-4 py-2.5 text-[15px] font-medium transition-colors",
+                "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
                 isActive
-                  ? "border-stat-butter bg-forest-active text-white shadow-sm"
-                  : "border-transparent text-white/85 hover:bg-white/5 hover:text-white"
+                  ? "bg-forest-active text-white"
+                  : "text-white/85 hover:bg-white/5 hover:text-white"
               )}
             >
+              {Icon ? (
+                <Icon aria-hidden="true" className="size-4 shrink-0" />
+              ) : null}
               {item.label}
             </Link>
           )
         })}
       </nav>
 
-      <button
-        type="button"
-        onClick={handleSignOut}
-        className="mt-6 px-2 text-left text-[15px] font-medium text-white/85 transition-colors hover:text-white"
-      >
-        Sign Out
-      </button>
+      <div className="mt-6 space-y-1 border-t border-white/10 pt-5">
+        <Link
+          href="/"
+          onClick={onNavigate}
+          className="flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm font-medium text-white/85 transition-colors hover:bg-white/5 hover:text-white"
+        >
+          <House aria-hidden="true" className="size-4" />
+          Back to home
+        </Link>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium text-white/85 transition-colors hover:bg-white/5 hover:text-white"
+        >
+          Sign Out
+        </button>
+      </div>
     </div>
   )
 }

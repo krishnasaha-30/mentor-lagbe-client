@@ -1,12 +1,14 @@
 "use client"
 
 import Link from "next/link"
-import { Plus, RotateCw } from "lucide-react"
+import { BookOpen, Plus, RotateCw } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { DataRow, DataTable } from "@/components/dashboard/data-table"
+import { EmptyState } from "@/components/dashboard/empty-state"
 import { StatusBadge } from "@/components/dashboard/status-badge"
+import { TableSkeleton } from "@/components/dashboard/table-skeleton"
 import {
   getMyTuitions,
   deleteTuition,
@@ -144,26 +146,25 @@ export function MyTuitions() {
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-soft">
-          Review your listings, approval decisions, and active status.
+          {list.status === "ready"
+            ? `${list.tuitions.length} ${
+                list.tuitions.length === 1 ? "listing" : "listings"
+              }`
+            : "Your tuition listings"}
         </p>
         <Link
           href="/dashboard/tuitions/new"
-          className="inline-flex h-10 items-center gap-2 rounded-full bg-coral px-5 text-sm font-semibold text-ink transition-colors hover:bg-coral-dark"
+          className="inline-flex h-10 items-center gap-2 rounded-full bg-coral px-5 text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
         >
           <Plus aria-hidden="true" className="size-4" />
-          Post Tuition
+          Post tuition
         </Link>
       </div>
 
       {sessionPending || list.status === "loading" ? (
-        <div
-          role="status"
-          className="rounded-[20px] border border-line bg-white px-6 py-14 text-center text-sm text-ink-soft"
-        >
-          Loading your tuitions...
-        </div>
+        <TableSkeleton columns={5} />
       ) : !token ? (
         <div
           role="alert"
@@ -187,20 +188,19 @@ export function MyTuitions() {
           </button>
         </div>
       ) : list.tuitions.length === 0 ? (
-        <div className="rounded-[20px] border border-line bg-white px-6 py-14 text-center">
-          <h2 className="font-display text-xl font-bold text-ink">
-            You have not posted any tuitions yet
-          </h2>
-          <p className="mt-2 text-sm text-ink-soft">
-            Create a listing to start receiving student applications.
-          </p>
-          <Link
-            href="/dashboard/tuitions/new"
-            className="mt-5 inline-flex rounded-full bg-coral px-5 py-2.5 text-sm font-semibold text-ink hover:bg-coral-dark"
-          >
-            Post your first tuition
-          </Link>
-        </div>
+        <EmptyState
+          icon={BookOpen}
+          title="No tuition listings yet"
+          description="Create a listing to start receiving student applications."
+          action={
+            <Link
+              href="/dashboard/tuitions/new"
+              className="inline-flex h-10 items-center rounded-full bg-coral px-5 text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
+            >
+              Post your first tuition
+            </Link>
+          }
+        />
       ) : (
         <DataTable
           columns={["Tuition", "Approval", "Status", "Fee", "Actions"]}

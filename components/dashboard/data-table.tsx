@@ -26,7 +26,12 @@ export function DataTable({
         className
       )}
     >
-      <div className="overflow-x-auto">
+      <div
+        role="region"
+        aria-label="Scrollable data table"
+        tabIndex={0}
+        className="overflow-x-auto overscroll-x-contain focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-forest"
+      >
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr className="border-b border-line/80">

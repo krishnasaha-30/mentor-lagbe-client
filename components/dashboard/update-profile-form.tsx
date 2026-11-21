@@ -222,13 +222,20 @@ export function UpdateProfileForm() {
       onSubmit={handleSubmit}
       className="mx-auto max-w-[760px] rounded-[20px] border border-line bg-white p-5 sm:p-7"
     >
-      <div className="mb-5 flex items-center gap-4">
+      <div className="mb-6 flex flex-wrap items-center gap-4 border-b border-line pb-5">
         <UserAvatar
           name={name || profile.name}
           image={imagePreview ?? profile.image}
-          size="xl"
+          size="2xl"
+          className="ring-4 ring-cream-soft"
         />
         <div>
+          <p className="text-base font-semibold text-ink">
+            {name || profile.name}
+          </p>
+          <p className="text-xs text-ink-soft">
+            {roleName} · {profile.email}
+          </p>
           <input
             ref={imageInput}
             id="profile-image"
@@ -240,7 +247,7 @@ export function UpdateProfileForm() {
           />
           <label
             htmlFor="profile-image"
-            className="inline-flex h-9 cursor-pointer items-center rounded-full border border-ink-soft/60 px-4 text-sm font-medium text-ink transition-colors focus-within:ring-2 focus-within:ring-forest hover:bg-cream"
+            className="mt-3 inline-flex h-9 cursor-pointer items-center rounded-full border border-ink-soft/60 px-4 text-sm font-medium text-ink transition-colors focus-within:ring-2 focus-within:ring-forest hover:bg-cream"
           >
             Upload photo (ImgBB)
           </label>

@@ -1,9 +1,11 @@
 "use client"
 
-import Link from "next/link"
+import { Receipt, RotateCw } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import { DataRow, DataTable } from "@/components/dashboard/data-table"
+import { EmptyState } from "@/components/dashboard/empty-state"
+import { TableSkeleton } from "@/components/dashboard/table-skeleton"
 import { Button } from "@/components/ui/button"
 import {
   getAdminTransactions,
@@ -74,61 +76,60 @@ export function AdminTransactions() {
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <Link
-            href="/dashboard"
-            className="text-sm font-semibold text-forest underline-offset-4 hover:underline"
-          >
-            Back to dashboard
-          </Link>
-          <h1 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-ink">
-            Transactions
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-ink-soft">
-            Latest 100 paid Stripe invoices. Amounts are gross payments before
-            refunds and Stripe fees.
-          </p>
-        </div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-ink-soft">
+          {list.status === "ready"
+            ? `${list.transactions.length} paid ${
+                list.transactions.length === 1 ? "invoice" : "invoices"
+              }`
+            : "Billing history"}
+        </p>
         <Button
           type="button"
           variant="outline"
           onClick={refreshTransactions}
           disabled={list.status === "loading" || sessionPending}
+          className="h-10 gap-2 rounded-full border-line bg-white px-4 text-ink"
         >
+          <RotateCw aria-hidden="true" className="size-4" />
           Refresh
         </Button>
       </div>
 
       {sessionPending || list.status === "loading" ? (
-        <div
-          role="status"
-          className="rounded-[20px] border border-line bg-white px-6 py-14 text-center text-sm text-ink-soft"
-        >
-          Loading transactions...
-        </div>
+        <TableSkeleton columns={6} />
       ) : list.status === "error" ? (
         <div
           role="alert"
-          className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center text-sm text-ink"
+          className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center"
         >
-          {list.message}
+          <p className="text-sm text-ink">{list.message}</p>
+          <button
+            type="button"
+            onClick={refreshTransactions}
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-semibold text-forest hover:bg-cream-soft"
+          >
+            <RotateCw aria-hidden="true" className="size-4" />
+            Try again
+          </button>
         </div>
+      ) : list.transactions.length === 0 ? (
+        <EmptyState
+          icon={Receipt}
+          title="No transactions yet"
+          description="Paid Stripe invoices will appear here once a subscription is purchased."
+        />
       ) : (
         <DataTable
-          columns={["Customer", "Plan", "Amount", "Date", "Status", "Invoice"]}
-          isEmpty={list.transactions.length === 0}
-          emptyMessage="No paid Stripe transactions have been recorded yet."
+          columns={["Name", "Email", "Plan", "Amount", "Date", "Invoice"]}
         >
           {list.transactions.map((transaction) => (
             <DataRow key={transaction.id}>
-              <td className="px-5 py-4 sm:px-6">
-                <p className="font-medium text-ink">
-                  {transaction.customer?.name || "Account unavailable"}
-                </p>
-                <p className="mt-1 text-xs text-ink-soft">
-                  {transaction.customer?.email ?? "—"}
-                </p>
+              <td className="px-5 py-4 font-medium text-ink sm:px-6">
+                {transaction.customer?.name || "Account unavailable"}
+              </td>
+              <td className="px-5 py-4 text-ink-soft sm:px-6">
+                {transaction.customer?.email ?? "—"}
               </td>
               <td className="px-5 py-4 text-ink-soft sm:px-6">
                 {transaction.plan === "pro_tutor" ? "Pro Tutor" : "Pro Student"}
@@ -141,11 +142,6 @@ export function AdminTransactions() {
               </td>
               <td className="px-5 py-4 whitespace-nowrap text-ink-soft sm:px-6">
                 {formatDate(transaction.createdAt)}
-              </td>
-              <td className="px-5 py-4 sm:px-6">
-                <span className="rounded-full bg-stat-mint px-3 py-1 text-xs font-semibold text-forest">
-                  Paid
-                </span>
               </td>
               <td className="px-5 py-4 sm:px-6">
                 {transaction.invoiceUrl ? (

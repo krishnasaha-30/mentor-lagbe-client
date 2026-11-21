@@ -1,11 +1,13 @@
 "use client"
 
-import { RotateCw } from "lucide-react"
+import { Inbox, RotateCw } from "lucide-react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { DataRow, DataTable } from "@/components/dashboard/data-table"
+import { EmptyState } from "@/components/dashboard/empty-state"
 import { StatusBadge } from "@/components/dashboard/status-badge"
+import { TableSkeleton } from "@/components/dashboard/table-skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import {
   getTutorApplications,
@@ -96,7 +98,35 @@ export function TutorApplicants() {
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
-      {state.status === "error" ? (
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-ink-soft">
+          {state.status === "ready"
+            ? `${state.applications.length} ${
+                state.applications.length === 1 ? "applicant" : "applicants"
+              }`
+            : "Student applications"}
+        </p>
+        <button
+          type="button"
+          onClick={refreshApplicants}
+          disabled={state.status === "loading" || sessionPending}
+          className="inline-flex h-10 items-center gap-2 rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink transition-colors hover:bg-cream-soft disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <RotateCw aria-hidden="true" className="size-4" />
+          Refresh
+        </button>
+      </div>
+
+      {sessionPending || state.status === "loading" ? (
+        <TableSkeleton columns={5} />
+      ) : !token ? (
+        <div
+          role="alert"
+          className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center text-sm text-ink"
+        >
+          Your session has expired. Please sign in again.
+        </div>
+      ) : state.status === "error" ? (
         <div
           role="alert"
           className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center"
@@ -111,25 +141,15 @@ export function TutorApplicants() {
             Try again
           </button>
         </div>
-      ) : sessionPending || state.status === "loading" ? (
-        <div
-          role="status"
-          className="rounded-[20px] border border-line bg-white px-6 py-14 text-center text-sm text-ink-soft"
-        >
-          Loading applicants...
-        </div>
-      ) : !token ? (
-        <div
-          role="alert"
-          className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center text-sm text-ink"
-        >
-          Your session has expired. Please sign in again.
-        </div>
+      ) : state.applications.length === 0 ? (
+        <EmptyState
+          icon={Inbox}
+          title="No applicants yet"
+          description="Students who apply to your tuitions will show up here."
+        />
       ) : (
         <DataTable
           columns={["Student", "Tuition", "Phone", "Schedule", "Action"]}
-          isEmpty={state.applications.length === 0}
-          emptyMessage="No students have applied to your tuitions yet."
           className="max-w-full"
         >
           {state.applications.map((application) => (

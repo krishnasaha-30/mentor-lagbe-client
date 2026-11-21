@@ -58,8 +58,6 @@ export default async function DashboardPage() {
 
   return (
     <DashboardOverview
-      name={session.user.name}
-      email={session.user.email}
       role={role}
       plan={session.user.plan}
       studentApplications={studentApplications}

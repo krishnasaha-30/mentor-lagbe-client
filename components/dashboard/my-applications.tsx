@@ -1,11 +1,14 @@
 "use client"
 
+import { FileText, RotateCw } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { DataRow, DataTable } from "@/components/dashboard/data-table"
+import { EmptyState } from "@/components/dashboard/empty-state"
 import { StatusBadge } from "@/components/dashboard/status-badge"
+import { TableSkeleton } from "@/components/dashboard/table-skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import {
   cancelApplication,
@@ -107,33 +110,8 @@ export function MyApplications() {
 
   return (
     <div className="mx-auto max-w-[1200px] pb-8">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className="font-display text-3xl font-bold tracking-[-0.02em] text-ink">
-            My Applications
-          </h2>
-          <p className="mt-2 text-sm text-ink-soft">
-            Track your tuition applications and their latest decisions.
-          </p>
-        </div>
-        {state.status === "error" ? (
-          <button
-            type="button"
-            onClick={refreshApplications}
-            className="rounded-full border border-line bg-white px-4 py-2 text-sm font-semibold text-forest hover:bg-cream-soft"
-          >
-            Try again
-          </button>
-        ) : null}
-      </div>
-
       {sessionPending || state.status === "loading" ? (
-        <div
-          role="status"
-          className="rounded-[20px] border border-line bg-white px-6 py-14 text-center text-sm text-ink-soft"
-        >
-          Loading your applications...
-        </div>
+        <TableSkeleton columns={6} />
       ) : !token ? (
         <div
           role="alert"
@@ -144,25 +122,32 @@ export function MyApplications() {
       ) : state.status === "error" ? (
         <div
           role="alert"
-          className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center text-sm text-ink"
+          className="rounded-[20px] border border-coral/40 bg-white px-6 py-10 text-center"
         >
-          {state.message}
+          <p className="text-sm text-ink">{state.message}</p>
+          <button
+            type="button"
+            onClick={refreshApplications}
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-line px-4 py-2 text-sm font-semibold text-forest hover:bg-cream-soft"
+          >
+            <RotateCw aria-hidden="true" className="size-4" />
+            Try again
+          </button>
         </div>
       ) : state.applications.length === 0 ? (
-        <div className="rounded-[20px] border border-line bg-white px-6 py-14 text-center">
-          <h3 className="font-display text-xl font-bold text-ink">
-            No applications yet
-          </h3>
-          <p className="mt-2 text-sm text-ink-soft">
-            Browse available tuitions and apply to find your next tutor.
-          </p>
-          <Link
-            href="/tuitions"
-            className="mt-5 inline-flex rounded-full bg-coral px-5 py-2.5 text-sm font-semibold text-ink hover:bg-coral-dark"
-          >
-            Browse Tuitions
-          </Link>
-        </div>
+        <EmptyState
+          icon={FileText}
+          title="No applications yet"
+          description="Browse available tuitions and apply to find your next tutor."
+          action={
+            <Link
+              href="/tuitions"
+              className="inline-flex h-10 items-center rounded-full bg-coral px-5 text-sm font-semibold text-white transition-colors hover:bg-coral-dark"
+            >
+              Browse tuitions
+            </Link>
+          }
+        />
       ) : (
         <DataTable
           columns={[
