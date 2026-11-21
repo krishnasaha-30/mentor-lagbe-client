@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/logo"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { authClient } from "@/lib/auth-client"
 import type { DashboardRole } from "@/lib/dashboard/nav"
@@ -117,6 +118,10 @@ export function DashboardSidebar({
       </nav>
 
       <div className="mt-6 space-y-1 border-t border-white/10 pt-5">
+        <ThemeToggle
+          showLabel
+          className="rounded-xl transition-colors hover:bg-white/5"
+        />
         <Link
           href="/"
           onClick={onNavigate}

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 
 import { SubscriptionAction } from "@/components/billing/subscription-action"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import {
   getDashboardTitle,
@@ -97,6 +98,8 @@ export function DashboardHeader({
             strokeWidth={1.75}
           />
         </button>
+
+        <ThemeToggle className="size-10 sm:size-11" />
 
         <div className="flex shrink-0 items-center gap-2.5 rounded-full border border-line bg-white py-1 pr-2 pl-1 transition-colors duration-200 hover:border-forest/20 sm:pr-3 lg:pr-4">
           <UserAvatar

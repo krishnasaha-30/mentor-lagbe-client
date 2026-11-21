@@ -327,7 +327,7 @@ export function UpdateProfileForm() {
       <Button
         type="submit"
         disabled={pending}
-        className="mt-5 h-10 rounded-full bg-ink px-6 text-white hover:bg-forest"
+        className="mt-5 h-10 rounded-full bg-ink px-6 text-white hover:bg-forest dark:bg-forest dark:text-white dark:hover:bg-forest-active"
       >
         {pending ? "Saving..." : "Save Changes"}
       </Button>

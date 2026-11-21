@@ -7,6 +7,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/logo"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { buttonVariants } from "@/components/ui/button"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { authClient } from "@/lib/auth-client"
@@ -153,6 +154,8 @@ export function Navbar() {
               {authButtons}
             </div>
           )}
+
+          <ThemeToggle />
 
           {!isPending && session ? (
             <Link

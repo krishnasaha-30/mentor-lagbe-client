@@ -2,6 +2,7 @@ import type { ReactNode } from "react"
 
 import { AvatarRow } from "@/components/auth/avatar-row"
 import { Logo } from "@/components/layout/logo"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 /**
  * Split-screen shell shared by /sign-up and (later) /sign-in.
@@ -9,7 +10,9 @@ import { Logo } from "@/components/layout/logo"
  */
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
+    <div className="relative grid min-h-svh lg:grid-cols-2">
+      <ThemeToggle className="absolute top-4 right-4 z-10" />
+
       {/* Left: brand panel */}
       <aside className="hidden flex-col justify-between bg-forest p-14 lg:flex xl:p-16">
         <Logo tone="light" />

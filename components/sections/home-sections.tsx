@@ -25,7 +25,7 @@ const subjects = [
   { name: "Math", mark: "∑", tone: "bg-mint" },
   { name: "Physics", mark: "E=mc²", tone: "bg-peach" },
   { name: "Programming", mark: "</>", tone: "bg-lilac" },
-  { name: "IELTS", mark: "IELTS", tone: "bg-stat-butter" },
+  { name: "IELTS", mark: "IELTS", tone: "bg-stat-butter dark:bg-[#ffe08a]" },
   { name: "English", mark: "Aa", tone: "bg-[#d9effc]" },
   { name: "Chemistry", mark: "H₂O", tone: "bg-[#dff2d6]" },
 ] as const
@@ -220,18 +220,18 @@ export function HomeSections({
             <Reveal key={subject.name} delay={index * 60}>
               <Link
                 href={`/tuitions?subject=${encodeURIComponent(subject.name)}`}
-                className={`group relative flex min-h-28 h-full flex-col justify-between overflow-hidden rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_35px_-26px_rgba(20,35,29,0.6)] ${subject.tone}`}
+                className={`group relative flex h-full min-h-28 flex-col justify-between overflow-hidden rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_35px_-26px_rgba(20,35,29,0.6)] ${subject.tone}`}
               >
-                <span className="font-display text-2xl font-bold text-ink">
+                <span className="font-display text-2xl font-bold text-ink dark:text-[#14231d]">
                   {subject.mark}
                 </span>
                 <span className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-ink">
+                  <span className="text-xs font-semibold text-ink dark:text-[#14231d]">
                     {subject.name}
                   </span>
                   <ArrowUpRight
                     aria-hidden="true"
-                    className="size-4 text-ink/45 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink"
+                    className="size-4 text-ink/45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-ink dark:text-[#14231d] dark:group-hover:text-[#14231d]"
                   />
                 </span>
               </Link>
@@ -259,7 +259,10 @@ export function HomeSections({
 
             <div className="float-slow absolute -right-2 -bottom-6 rounded-2xl border border-line/60 bg-white px-5 py-4 shadow-[0_20px_45px_-28px_rgba(20,35,29,0.55)] sm:-right-5">
               <p className="flex items-center gap-2 font-display text-2xl font-bold text-ink">
-                <GraduationCap aria-hidden="true" className="size-6 text-coral" />
+                <GraduationCap
+                  aria-hidden="true"
+                  className="size-6 text-coral"
+                />
                 1 : 1
               </p>
               <p className="mt-1 text-[10px] font-semibold tracking-[0.14em] text-ink-soft uppercase">
@@ -888,7 +891,9 @@ export function HomeSections({
           </div>
 
           <div className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-5 text-[10px] text-white/55 sm:flex-row sm:items-center sm:justify-between">
-            <p>© {new Date().getFullYear()} MentorLagbe. All rights reserved.</p>
+            <p>
+              © {new Date().getFullYear()} MentorLagbe. All rights reserved.
+            </p>
             <p>Photography by Unsplash contributors.</p>
           </div>
         </div>
