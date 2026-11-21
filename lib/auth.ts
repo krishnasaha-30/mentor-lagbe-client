@@ -1,10 +1,14 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
+import { jwt } from "better-auth/plugins";
 
 const client = new MongoClient(process.env.MongoDB_URI as string);
 
 const db = client.db("mentor-lagbe-app");
+const authIssuer = process.env.BETTER_AUTH_URL
+  ? new URL(process.env.BETTER_AUTH_URL).origin
+  : undefined;
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL as string,
@@ -66,4 +70,16 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
+  plugins: [
+    jwt({
+      jwt: {
+        issuer: authIssuer,
+        audience: "mentor-lagbe-api",
+        expirationTime: "1h",
+      },
+      jwks: {
+        keyPairConfig: { alg: "EdDSA", crv: "Ed25519" },
+      },
+    }),
+  ],
 });

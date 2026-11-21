@@ -2,6 +2,7 @@ import type {
   AdminTuitionApproval,
   PendingTuition,
 } from "@/lib/types/admin-tuition"
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000"
@@ -62,10 +63,10 @@ async function readResponse(response: Response) {
 }
 
 export async function getPendingTuitions(token: string) {
-  const response = await fetch(`${API_BASE_URL}/api/admin/tuitions/pending`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/admin/tuitions/pending`,
+    token
+  )
   const payload = await readResponse(response)
 
   if (
@@ -83,16 +84,13 @@ export async function updateTuitionApproval(
   approvalStatus: AdminTuitionApproval,
   token: string
 ) {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/admin/tuitions/${encodeURIComponent(id)}/approval`,
+    token,
     {
       method: "PATCH",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ approvalStatus }),
-      cache: "no-store",
     }
   )
   const payload = await readResponse(response)

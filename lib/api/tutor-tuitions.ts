@@ -1,4 +1,5 @@
 import type { NewTuitionInput, TutorTuition } from "@/lib/types/tuition"
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000"
@@ -58,16 +59,18 @@ export async function uploadTuitionBanner(
   token: string,
   tuitionId?: string
 ) {
-  const response = await fetch(`${API_BASE_URL}/api/tuitions/banner`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${token}`,
-      "content-type": file.type,
-      ...(tuitionId ? { "x-tuition-id": tuitionId } : {}),
-    },
-    body: file,
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/tuitions/banner`,
+    token,
+    {
+      method: "POST",
+      headers: {
+        "content-type": file.type,
+        ...(tuitionId ? { "x-tuition-id": tuitionId } : {}),
+      },
+      body: file,
+    }
+  )
   const payload = await readResponse(response)
 
   if (typeof payload.url !== "string") {
@@ -78,15 +81,15 @@ export async function uploadTuitionBanner(
 }
 
 export async function createTuition(tuition: NewTuitionInput, token: string) {
-  const response = await fetch(`${API_BASE_URL}/api/tuitions`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${token}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(tuition),
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/tuitions`,
+    token,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(tuition),
+    }
+  )
   const payload = await readResponse(response)
 
   if (typeof payload.id !== "string") {
@@ -97,10 +100,10 @@ export async function createTuition(tuition: NewTuitionInput, token: string) {
 }
 
 export async function getMyTuitions(token: string): Promise<TutorTuition[]> {
-  const response = await fetch(`${API_BASE_URL}/api/tuitions/mine`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/tuitions/mine`,
+    token
+  )
   const payload = await readResponse(response)
 
   if (
@@ -118,16 +121,13 @@ export async function updateTuition(
   tuition: NewTuitionInput,
   token: string
 ) {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/tuitions/${encodeURIComponent(id)}`,
+    token,
     {
       method: "PATCH",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify(tuition),
-      cache: "no-store",
     }
   )
   const payload = await readResponse(response)
@@ -142,16 +142,13 @@ export async function updateTuitionActivity(
   isActive: boolean,
   token: string
 ) {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/tuitions/${encodeURIComponent(id)}/activity`,
+    token,
     {
       method: "PATCH",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ isActive }),
-      cache: "no-store",
     }
   )
   const payload = await readResponse(response)
@@ -162,12 +159,11 @@ export async function updateTuitionActivity(
 }
 
 export async function deleteTuition(id: string, token: string) {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/tuitions/${encodeURIComponent(id)}`,
+    token,
     {
       method: "DELETE",
-      headers: { authorization: `Bearer ${token}` },
-      cache: "no-store",
     }
   )
   const payload = await readResponse(response)

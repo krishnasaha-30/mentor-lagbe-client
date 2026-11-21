@@ -1,3 +1,5 @@
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
+
 export type AdminUser = {
   id: string
   name: string
@@ -51,10 +53,10 @@ async function readResponse(response: Response) {
 }
 
 export async function getAdminUsers(token: string): Promise<AdminUser[]> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/admin/users`,
+    token
+  )
   const payload = await readResponse(response)
 
   if (!Array.isArray(payload.users) || !payload.users.every(isAdminUser)) {
@@ -69,16 +71,15 @@ export async function updateAdminUserRole(
   role: AdminUser["role"],
   token: string
 ): Promise<void> {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/admin/users/${encodeURIComponent(id)}/role`,
+    token,
     {
       method: "PATCH",
       headers: {
-        authorization: `Bearer ${token}`,
         "content-type": "application/json",
       },
       body: JSON.stringify({ role }),
-      cache: "no-store",
     }
   )
   const payload = await readResponse(response)

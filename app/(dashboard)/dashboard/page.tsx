@@ -3,9 +3,11 @@ import { requireDashboard } from "@/lib/dashboard/guard"
 import { getMyApplications } from "@/lib/api/applications"
 import { getTutorDashboard } from "@/lib/api/tutor-dashboard"
 import { getAdminDashboard } from "@/lib/api/admin-dashboard"
+import { getToken } from "@/lib/core/server"
 
 export default async function DashboardPage() {
   const { session, role } = await requireDashboard()
+  const token = await getToken()
   let studentApplications = null
   let applicationsError = false
   let tutorDashboard = null
@@ -15,7 +17,7 @@ export default async function DashboardPage() {
 
   if (role === "student") {
     try {
-      const applications = await getMyApplications(session.session.token)
+      const applications = await getMyApplications(token)
       studentApplications = {
         total: applications.length,
         accepted: applications.filter(
@@ -40,7 +42,7 @@ export default async function DashboardPage() {
 
   if (role === "tutor") {
     try {
-      tutorDashboard = await getTutorDashboard(session.session.token)
+      tutorDashboard = await getTutorDashboard(token)
     } catch (error) {
       console.error("Could not load tutor dashboard summary:", error)
       tutorDashboardError = true
@@ -49,7 +51,7 @@ export default async function DashboardPage() {
 
   if (role === "admin") {
     try {
-      adminDashboard = await getAdminDashboard(session.session.token)
+      adminDashboard = await getAdminDashboard(token)
     } catch (error) {
       console.error("Could not load admin dashboard summary:", error)
       adminDashboardError = true

@@ -1,3 +1,5 @@
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:5000"
 
@@ -46,10 +48,10 @@ function isTransaction(value: unknown): value is AdminTransaction {
 export async function getAdminTransactions(
   token: string
 ): Promise<AdminTransaction[]> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/transactions`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/admin/transactions`,
+    token
+  )
 
   let payload: unknown
 

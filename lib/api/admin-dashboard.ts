@@ -1,3 +1,5 @@
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
+
 export type AdminDashboardSummary = {
   totalUsers: number
   totalTutors: number
@@ -45,10 +47,10 @@ function isAdminDashboardSummary(
 export async function getAdminDashboard(
   token: string
 ): Promise<AdminDashboardSummary> {
-  const response = await fetch(`${API_BASE_URL}/api/admin/dashboard`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/admin/dashboard`,
+    token
+  )
 
   let payload: unknown
 

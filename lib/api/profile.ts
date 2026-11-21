@@ -1,3 +1,5 @@
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
+
 export type UserProfile = {
   id: string
   name: string
@@ -60,10 +62,7 @@ async function readResponse(response: Response) {
 }
 
 export async function getMyProfile(token: string): Promise<UserProfile> {
-  const response = await fetch(`${API_BASE_URL}/api/me`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(`${API_BASE_URL}/api/me`, token)
   const payload = await readResponse(response)
 
   if (!isUserProfile(payload)) {
@@ -74,15 +73,15 @@ export async function getMyProfile(token: string): Promise<UserProfile> {
 }
 
 export async function uploadProfileImage(file: File, token: string) {
-  const response = await fetch(`${API_BASE_URL}/api/me/image`, {
-    method: "POST",
-    headers: {
-      authorization: `Bearer ${token}`,
-      "content-type": file.type,
-    },
-    body: file,
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/me/image`,
+    token,
+    {
+      method: "POST",
+      headers: { "content-type": file.type },
+      body: file,
+    }
+  )
   const payload = await readResponse(response)
 
   if (
@@ -99,15 +98,15 @@ export async function updateMyProfile(
   profile: ProfileUpdate,
   token: string
 ): Promise<UserProfile> {
-  const response = await fetch(`${API_BASE_URL}/api/me/profile`, {
-    method: "PATCH",
-    headers: {
-      authorization: `Bearer ${token}`,
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(profile),
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/me/profile`,
+    token,
+    {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(profile),
+    }
+  )
   const payload = await readResponse(response)
 
   if (!isUserProfile(payload)) {

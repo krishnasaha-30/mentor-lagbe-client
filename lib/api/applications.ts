@@ -1,3 +1,5 @@
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
+
 export type NewApplicationInput = {
   phone: string
   preferredSchedule: string
@@ -70,16 +72,15 @@ export async function createApplication(
   application: NewApplicationInput,
   token: string
 ) {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/tuitions/${encodeURIComponent(tuitionId)}/applications`,
+    token,
     {
       method: "POST",
       headers: {
-        authorization: `Bearer ${token}`,
         "content-type": "application/json",
       },
       body: JSON.stringify(application),
-      cache: "no-store",
     }
   )
 
@@ -110,10 +111,10 @@ export async function createApplication(
 }
 
 export async function getMyApplications(token: string) {
-  const response = await fetch(`${API_BASE_URL}/api/applications/mine`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/applications/mine`,
+    token
+  )
 
   let payload: unknown
 
@@ -143,12 +144,11 @@ export async function getMyApplications(token: string) {
 }
 
 export async function cancelApplication(id: string, token: string) {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/applications/${encodeURIComponent(id)}`,
+    token,
     {
       method: "DELETE",
-      headers: { authorization: `Bearer ${token}` },
-      cache: "no-store",
     }
   )
 

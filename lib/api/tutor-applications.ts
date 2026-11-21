@@ -1,3 +1,5 @@
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
+
 export type TutorApplication = {
   id: string
   status: "pending" | "accepted" | "rejected"
@@ -87,10 +89,10 @@ async function readResponse(response: Response) {
 export async function getTutorApplications(
   token: string
 ): Promise<TutorApplication[]> {
-  const response = await fetch(`${API_BASE_URL}/api/tutor/applications`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/tutor/applications`,
+    token
+  )
   const payload = await readResponse(response)
 
   if (
@@ -108,16 +110,13 @@ export async function updateApplicationStatus(
   status: ApplicationDecision,
   token: string
 ) {
-  const response = await fetch(
+  const response = await fetchWithAccessToken(
     `${API_BASE_URL}/api/applications/${encodeURIComponent(id)}/status`,
+    token,
     {
       method: "PATCH",
-      headers: {
-        authorization: `Bearer ${token}`,
-        "content-type": "application/json",
-      },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({ status }),
-      cache: "no-store",
     }
   )
   const payload = await readResponse(response)

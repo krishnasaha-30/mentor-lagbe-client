@@ -18,18 +18,20 @@ export async function getSession() {
   })
 }
 
-/**
- * Returns the BetterAuth session token ("the JWT") that the Express API
- * expects in the Authorization header. Redirects when signed out.
- */
+/** Returns a signed BetterAuth JWT for authenticated Express API requests. */
 export async function getToken() {
-  const session = await getSession()
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+    query: { disableCookieCache: true },
+  })
 
   if (!session || !session.session?.token) {
     redirect("/unauthorized")
   }
 
-  return session.session.token
+  const { token } = await auth.api.getToken({ headers: requestHeaders })
+  return token
 }
 
 /**

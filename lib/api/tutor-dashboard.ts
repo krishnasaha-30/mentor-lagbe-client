@@ -1,3 +1,5 @@
+import { fetchWithAccessToken } from "@/lib/api/authenticated-fetch"
+
 export type TutorDashboardSummary = {
   tuitionsPosted: number
   activeApproved: number
@@ -54,10 +56,10 @@ function isTutorDashboardSummary(
 export async function getTutorDashboard(
   token: string
 ): Promise<TutorDashboardSummary> {
-  const response = await fetch(`${API_BASE_URL}/api/tutor/dashboard`, {
-    headers: { authorization: `Bearer ${token}` },
-    cache: "no-store",
-  })
+  const response = await fetchWithAccessToken(
+    `${API_BASE_URL}/api/tutor/dashboard`,
+    token
+  )
 
   let payload: unknown
 
