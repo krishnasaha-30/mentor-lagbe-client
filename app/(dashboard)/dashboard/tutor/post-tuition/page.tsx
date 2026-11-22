@@ -1,0 +1,8 @@
+import { PostTuitionPageContent } from "@/components/dashboard/post-tuition-page-content"
+import { requireDashboard } from "@/lib/dashboard/guard"
+
+export default async function TutorPostTuitionPage() {
+  await requireDashboard(["tutor"])
+
+  return <PostTuitionPageContent />
+}

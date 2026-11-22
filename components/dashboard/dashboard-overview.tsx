@@ -281,11 +281,11 @@ function StudentDashboardOverview({
 
       <section className="mt-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-xl font-bold text-ink">
+          <h2 className="font-display text-lg font-bold text-ink sm:text-xl">
             Recent applications
           </h2>
           <Link
-            href="/dashboard/applications"
+            href="/dashboard/student/my-applications"
             className="text-sm font-semibold text-forest underline-offset-4 hover:underline"
           >
             View all
@@ -391,11 +391,11 @@ function TutorDashboardOverview({
 
       <section className="mt-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-xl font-bold text-ink">
+          <h2 className="font-display text-lg font-bold text-ink sm:text-xl">
             Latest applicants
           </h2>
           <Link
-            href="/dashboard/applicants"
+            href="/dashboard/tutor/applicants"
             className="text-sm font-semibold text-forest underline-offset-4 hover:underline"
           >
             View all
@@ -514,7 +514,7 @@ function AdminDashboardOverview({
       <section className="mt-4 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <div className="rounded-[20px] border border-line bg-white p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-display text-xl font-bold text-ink">
+            <h2 className="font-display text-lg font-bold text-ink sm:text-xl">
               Paid subscription revenue
             </h2>
             <Link
@@ -568,7 +568,7 @@ function AdminDashboardOverview({
         </div>
 
         <div className="rounded-[20px] border border-line bg-white p-5 sm:p-6">
-          <h2 className="font-display text-xl font-bold text-ink">
+          <h2 className="font-display text-lg font-bold text-ink sm:text-xl">
             Quick actions
           </h2>
           <div className="mt-4 space-y-2.5">
@@ -578,7 +578,7 @@ function AdminDashboardOverview({
               return (
                 <Link
                   key={feature.title}
-                  href={feature.href ?? "/dashboard"}
+                  href={feature.href ?? "/dashboard/admin"}
                   className="group flex items-center gap-3 rounded-xl border border-line/70 bg-cream/40 px-3.5 py-3 transition-colors hover:border-forest/25 hover:bg-cream"
                 >
                   <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-forest shadow-sm">

@@ -4,6 +4,8 @@ import { notFound } from "next/navigation"
 
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { TuitionApplicationForm } from "@/components/sections/tuition-application-form"
+import { TuitionReviews } from "@/components/sections/tuition-reviews"
+import { BookmarkButton } from "@/components/ui/bookmark-button"
 import { UserAvatar } from "@/components/ui/user-avatar"
 import { getPublicTuition } from "@/lib/api/tuitions"
 
@@ -53,13 +55,22 @@ export default async function TuitionDetailsPage({
 
   return (
     <main className="page-container py-8 sm:py-12">
-      <Link
-        href="/tuitions"
-        className="inline-flex items-center gap-2 text-sm font-semibold text-forest hover:underline"
-      >
-        <ArrowLeft aria-hidden="true" className="size-4" />
-        Back to Browse Tuitions
-      </Link>
+      <div className="flex items-center justify-between gap-4">
+        <Link
+          href="/tuitions"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-forest hover:underline"
+        >
+          <ArrowLeft aria-hidden="true" className="size-4" />
+          Back to Browse Tuitions
+        </Link>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-ink-soft hidden sm:inline">Save listing</span>
+          <BookmarkButton
+            tuitionId={tuition.id}
+            tuitionTitle={tuition.title}
+          />
+        </div>
+      </div>
 
       <div className="mt-5 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
         <article className="overflow-hidden rounded-[20px] border border-line bg-white">
@@ -160,6 +171,8 @@ export default async function TuitionDetailsPage({
                 </p>
               )}
             </section>
+
+            <TuitionReviews tuitionId={tuition.id} />
           </div>
         </article>
 

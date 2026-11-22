@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import { useRouter } from "next/navigation"
+import { CalendarClock, ImageIcon, PencilLine } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -138,7 +139,7 @@ export function PostTuitionForm({
       if (tuition) {
         await updateTuition(tuition.id, tuitionData, token)
         toast.success("Tuition updated and sent for admin approval.")
-        router.push("/dashboard/tuitions")
+        router.push("/dashboard/tutor/my-tuitions")
         router.refresh()
       } else {
         await createTuition(tuitionData, token)
@@ -218,7 +219,8 @@ export function PostTuitionForm({
         onSubmit={handleSubmit}
         className="grid gap-x-3 gap-y-4 sm:grid-cols-2"
       >
-        <p className="text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+        <p className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+          <PencilLine aria-hidden="true" className="size-3.5 text-forest" />
           Tuition details
         </p>
 
@@ -308,7 +310,8 @@ export function PostTuitionForm({
           />
         </div>
 
-        <p className="mt-2 border-t border-line pt-5 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+        <p className="mt-2 flex items-center gap-2 border-t border-line pt-5 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+          <CalendarClock aria-hidden="true" className="size-3.5 text-forest" />
           Schedule &amp; fee
         </p>
 
@@ -341,7 +344,8 @@ export function PostTuitionForm({
           />
         </div>
 
-        <p className="mt-2 border-t border-line pt-5 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+        <p className="mt-2 flex items-center gap-2 border-t border-line pt-5 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:col-span-2">
+          <ImageIcon aria-hidden="true" className="size-3.5 text-forest" />
           Banner &amp; description
         </p>
 

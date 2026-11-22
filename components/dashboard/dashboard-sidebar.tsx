@@ -2,17 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import {
-  BookOpen,
-  ClipboardCheck,
-  FileCheck2,
-  House,
-  LayoutDashboard,
-  Receipt,
-  UserRound,
-  Users,
-  type LucideIcon,
-} from "lucide-react"
+import { House } from "lucide-react"
 import { toast } from "sonner"
 
 import { Logo } from "@/components/layout/logo"
@@ -22,18 +12,6 @@ import { authClient } from "@/lib/auth-client"
 import type { DashboardRole } from "@/lib/dashboard/nav"
 import { dashboardNav, getActiveHref, roleLabel } from "@/lib/dashboard/nav"
 import { cn } from "@/lib/utils"
-
-const navigationIcons: Record<string, LucideIcon> = {
-  "/dashboard": LayoutDashboard,
-  "/dashboard/applications": FileCheck2,
-  "/dashboard/profile": UserRound,
-  "/dashboard/tuitions/new": BookOpen,
-  "/dashboard/tuitions": BookOpen,
-  "/dashboard/applicants": Users,
-  "/dashboard/admin/users": Users,
-  "/dashboard/admin/tuitions": ClipboardCheck,
-  "/dashboard/admin/transactions": Receipt,
-}
 
 export type DashboardUser = {
   id: string
@@ -93,7 +71,6 @@ export function DashboardSidebar({
       <nav className="mt-6 flex flex-1 flex-col gap-1" aria-label="Dashboard">
         {items.map((item) => {
           const isActive = item.href === activeHref
-          const Icon = navigationIcons[item.href]
 
           return (
             <Link
@@ -102,15 +79,21 @@ export function DashboardSidebar({
               onClick={onNavigate}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
+                "group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-forest-active text-white"
-                  : "text-white/85 hover:bg-white/5 hover:text-white"
+                  ? "bg-forest-active text-white shadow-[inset_3px_0_0_0_var(--butter)]"
+                  : "text-white/80 hover:translate-x-0.5 hover:bg-white/5 hover:text-white"
               )}
             >
-              {Icon ? (
-                <Icon aria-hidden="true" className="size-4 shrink-0" />
-              ) : null}
+              <item.icon
+                aria-hidden="true"
+                className={cn(
+                  "size-4 shrink-0 transition-colors",
+                  isActive
+                    ? "text-butter"
+                    : "text-white/50 group-hover:text-white/80"
+                )}
+              />
               {item.label}
             </Link>
           )

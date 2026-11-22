@@ -1,12 +1,13 @@
 "use client"
 
-import { FileText, RotateCw } from "lucide-react"
+import { FileText, RotateCw, Star } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { DataRow, DataTable } from "@/components/dashboard/data-table"
 import { EmptyState } from "@/components/dashboard/empty-state"
+import { ReviewModal } from "@/components/dashboard/review-modal"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { TableSkeleton } from "@/components/dashboard/table-skeleton"
 import { UserAvatar } from "@/components/ui/user-avatar"
@@ -41,6 +42,11 @@ export function MyApplications() {
   const token = session?.session.token
   const [state, setState] = useState<ApplicationsState>({ status: "loading" })
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [reviewingApp, setReviewingApp] = useState<{
+    id: string
+    tuitionId: string
+    title: string
+  } | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
@@ -191,9 +197,16 @@ export function MyApplications() {
                       image={application.tuition.tutor.image}
                       size="sm"
                     />
-                    <span className="max-w-36 truncate">
-                      {application.tuition.tutor.name}
-                    </span>
+                    <div className="min-w-0">
+                      <span className="block max-w-40 truncate font-medium text-ink">
+                        {application.tuition.tutor.name}
+                      </span>
+                      {application.tuition.tutor.email ? (
+                        <span className="block max-w-40 truncate text-xs text-ink-soft">
+                          {application.tuition.tutor.email}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
                 ) : (
                   <span className="text-ink-soft">Unavailable</span>
@@ -225,6 +238,21 @@ export function MyApplications() {
                       ? "Cancelling..."
                       : "Cancel"}
                   </button>
+                ) : application.status === "accepted" && application.tuition ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReviewingApp({
+                        id: application.id,
+                        tuitionId: application.tuition!.id,
+                        title: application.tuition!.title,
+                      })
+                    }
+                    className="inline-flex items-center gap-1.5 rounded-full border border-forest/30 bg-mint/40 px-3.5 py-1.5 text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-white"
+                  >
+                    <Star className="size-3.5 fill-current" />
+                    Review
+                  </button>
                 ) : (
                   <span className="text-xs text-ink-soft">—</span>
                 )}
@@ -233,6 +261,16 @@ export function MyApplications() {
           ))}
         </DataTable>
       )}
+
+      {reviewingApp && token ? (
+        <ReviewModal
+          tuitionId={reviewingApp.tuitionId}
+          tuitionTitle={reviewingApp.title}
+          token={token}
+          isOpen={true}
+          onClose={() => setReviewingApp(null)}
+        />
+      ) : null}
     </div>
   )
 }

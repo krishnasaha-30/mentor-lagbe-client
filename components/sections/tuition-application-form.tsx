@@ -76,9 +76,21 @@ export function TuitionApplicationForm({ tuitionId }: { tuitionId: string }) {
 
   if (session && session.user.role !== "student") {
     return (
-      <p role="status" className="text-xs leading-5 text-ink-soft">
-        Only student accounts can apply.
-      </p>
+      <div
+        role="status"
+        className="rounded-xl border border-line bg-cream-soft p-4 text-center"
+      >
+        <p className="text-sm font-semibold text-ink">
+          Application Restricted
+        </p>
+        <p className="mt-1.5 text-xs text-ink-soft leading-relaxed">
+          You are signed in as a{" "}
+          <span className="font-semibold capitalize text-forest">
+            {session.user.role}
+          </span>
+          . Only registered students can apply for tuitions.
+        </p>
+      </div>
     )
   }
 

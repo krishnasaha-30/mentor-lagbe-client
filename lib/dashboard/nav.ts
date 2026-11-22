@@ -1,33 +1,80 @@
+import {
+  BookOpen,
+  Bookmark,
+  ClipboardCheck,
+  FileText,
+  Inbox,
+  LayoutDashboard,
+  PlusCircle,
+  Receipt,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react"
+
 export type DashboardRole = "student" | "tutor" | "admin"
 
 export type DashboardNavItem = {
   label: string
   href: string
+  icon: LucideIcon
 }
 
 /**
  * One sidebar per role. Keeping the links in a single config means the
  * sidebar, the mobile menu and the page-title lookup can never drift apart.
+ *
+ * The URLs follow the role-prefixed routes from the assignment brief:
+ *   /dashboard/student, /dashboard/tutor, /dashboard/admin
  */
 export const dashboardNav: Record<DashboardRole, DashboardNavItem[]> = {
   student: [
-    { label: "Overview", href: "/dashboard" },
-    { label: "My Applications", href: "/dashboard/applications" },
-    { label: "Update Profile", href: "/dashboard/profile" },
+    { label: "Overview", href: "/dashboard/student", icon: LayoutDashboard },
+    {
+      label: "My Applications",
+      href: "/dashboard/student/my-applications",
+      icon: FileText,
+    },
+    {
+      label: "Saved Tuitions",
+      href: "/dashboard/student/saved-tuitions",
+      icon: Bookmark,
+    },
+    { label: "Update Profile", href: "/dashboard/profile", icon: UserRound },
   ],
   tutor: [
-    { label: "Overview", href: "/dashboard" },
-    { label: "Post Tuition", href: "/dashboard/tuitions/new" },
-    { label: "My Tuitions", href: "/dashboard/tuitions" },
-    { label: "Applicants", href: "/dashboard/applicants" },
-    { label: "Update Profile", href: "/dashboard/profile" },
+    { label: "Overview", href: "/dashboard/tutor", icon: LayoutDashboard },
+    {
+      label: "Post Tuition",
+      href: "/dashboard/tutor/post-tuition",
+      icon: PlusCircle,
+    },
+    {
+      label: "My Tuitions",
+      href: "/dashboard/tutor/my-tuitions",
+      icon: BookOpen,
+    },
+    {
+      label: "Applicants",
+      href: "/dashboard/tutor/applicants",
+      icon: Inbox,
+    },
+    { label: "Update Profile", href: "/dashboard/profile", icon: UserRound },
   ],
   admin: [
-    { label: "Overview", href: "/dashboard" },
-    { label: "Users", href: "/dashboard/admin/users" },
-    { label: "Tuitions", href: "/dashboard/admin/tuitions" },
-    { label: "Transactions", href: "/dashboard/admin/transactions" },
-    { label: "Update Profile", href: "/dashboard/profile" },
+    { label: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
+    { label: "Users", href: "/dashboard/admin/users", icon: Users },
+    {
+      label: "Tuitions",
+      href: "/dashboard/admin/tuitions",
+      icon: ClipboardCheck,
+    },
+    {
+      label: "Transactions",
+      href: "/dashboard/admin/transactions",
+      icon: Receipt,
+    },
+    { label: "Update Profile", href: "/dashboard/profile", icon: UserRound },
   ],
 }
 
@@ -54,21 +101,32 @@ export function getDashboardTitle(
     return "Edit Tuition"
   }
 
-  if (pathname === "/dashboard") {
-    if (role === "student") return "Student Overview"
-    if (role === "tutor") return "Tutor Overview"
-    return "Admin Overview"
-  }
-
   const titles: Record<string, string> = {
+    // Role-scoped routes from the assignment brief.
+    "/dashboard/student": "Student Overview",
+    "/dashboard/student/my-applications": "My Applications",
+    "/dashboard/student/saved-tuitions": "Saved Tuitions",
+    "/dashboard/tutor": "Tutor Overview",
+    "/dashboard/tutor/post-tuition": "Post a Tuition",
+    "/dashboard/tutor/my-tuitions": "My Tuitions",
+    "/dashboard/tutor/applicants": "Applicants",
+    "/dashboard/admin": "Admin Overview",
+    "/dashboard/admin/users": "User Management",
+    "/dashboard/admin/tuitions": "Tuition Approvals",
+    "/dashboard/admin/transactions": "Transactions",
+    // Older shared routes stay supported.
+    "/dashboard": "Dashboard",
     "/dashboard/applications": "My Applications",
     "/dashboard/applicants": "Applicants",
     "/dashboard/tuitions": "My Tuitions",
     "/dashboard/tuitions/new": "Post a Tuition",
     "/dashboard/profile": "Update Profile",
-    "/dashboard/admin/users": "User Management",
-    "/dashboard/admin/tuitions": "Tuition Approvals",
-    "/dashboard/admin/transactions": "Transactions",
+  }
+
+  if (pathname === "/dashboard") {
+    if (role === "student") return "Student Overview"
+    if (role === "tutor") return "Tutor Overview"
+    return "Admin Overview"
   }
 
   return titles[pathname] ?? "Dashboard"
@@ -81,8 +139,9 @@ export function isNavItemActive(href: string, pathname: string): boolean {
 }
 
 /**
- * `/dashboard/tuitions` is a prefix of `/dashboard/tuitions/new`, so the
- * longest match wins and only one link is highlighted at a time.
+ * Routes share prefixes (for example `/dashboard/tutor` and
+ * `/dashboard/tutor/my-tuitions`), so the longest match wins and only one
+ * link is highlighted at a time.
  */
 export function getActiveHref(
   items: DashboardNavItem[],

@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils"
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Browse Tuitions", href: "/tuitions" },
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Pricing", href: "/pricing" },
   { label: "How It Works", href: "/#how-it-works" },
 ]
 
@@ -130,14 +130,29 @@ export function Navbar() {
               >
                 Dashboard
               </Link>
-              <UserAvatar
-                name={session.user.name}
-                image={session.user.image ?? null}
-                size="md"
-              />
-              <span className="hidden max-w-[120px] truncate text-sm font-medium text-ink md:inline">
-                {session.user.name}
-              </span>
+              <Link
+                href="/dashboard/profile"
+                onClick={() => setSelectedAnchor(null)}
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "hidden h-9 rounded-lg border-ink/20 bg-white px-4 text-[13px] text-ink hover:bg-cream-soft lg:inline-flex"
+                )}
+              >
+                Update Profile
+              </Link>
+              <div className="flex items-center gap-2 rounded-full border border-line bg-white py-1 pr-2 pl-1">
+                <UserAvatar
+                  name={session.user.name}
+                  image={session.user.image ?? null}
+                  size="md"
+                />
+                <span className="hidden max-w-[120px] truncate text-xs font-semibold text-ink md:inline">
+                  {session.user.name}
+                </span>
+                <span className="hidden rounded-full bg-stat-butter px-2 py-0.5 text-[10px] font-bold tracking-wide text-ink uppercase sm:inline">
+                  {session.user.role}
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={handleSignOut}
@@ -229,12 +244,14 @@ export function Navbar() {
                     image={session.user.image ?? null}
                     size="md"
                   />
-                  <p className="min-w-0 text-xs text-ink-soft">
-                    Signed in as{" "}
-                    <span className="font-semibold text-ink">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-ink">
                       {session.user.name}
+                    </p>
+                    <span className="mt-1 inline-flex rounded-full bg-stat-butter px-2 py-0.5 text-[10px] font-bold tracking-wide text-ink uppercase">
+                      {session.user.role}
                     </span>
-                  </p>
+                  </div>
                 </div>
                 <Link
                   href="/dashboard"
@@ -248,6 +265,19 @@ export function Navbar() {
                   )}
                 >
                   Dashboard
+                </Link>
+                <Link
+                  href="/dashboard/profile"
+                  onClick={() => {
+                    setIsOpen(false)
+                    setSelectedAnchor(null)
+                  }}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "h-10 rounded-lg"
+                  )}
+                >
+                  Update Profile
                 </Link>
                 <button
                   type="button"

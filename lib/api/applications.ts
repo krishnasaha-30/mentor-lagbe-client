@@ -20,7 +20,7 @@ export type MyApplication = {
     classLevel: string
     monthlyFee: number
     isPublic: boolean
-    tutor: { name: string; image: string | null } | null
+    tutor: { name: string; email?: string | null; image: string | null } | null
   } | null
 }
 

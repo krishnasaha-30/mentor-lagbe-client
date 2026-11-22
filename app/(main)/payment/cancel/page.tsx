@@ -16,7 +16,7 @@ export default function PaymentCancelPage() {
           again whenever you are ready.
         </p>
         <Link
-          href="/#pricing"
+          href="/pricing"
           className="mt-7 inline-flex h-10 items-center justify-center rounded-full bg-ink px-5 text-sm font-semibold text-white transition-colors hover:bg-forest"
         >
           Return to pricing

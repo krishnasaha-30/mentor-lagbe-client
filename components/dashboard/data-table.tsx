@@ -32,14 +32,14 @@ export function DataTable({
         tabIndex={0}
         className="overflow-x-auto overscroll-x-contain focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-forest"
       >
-        <table className="w-full min-w-[640px] border-collapse text-left">
+        <table className="w-full min-w-[600px] border-collapse text-left">
           <thead>
             <tr className="border-b border-line/80">
               {columns.map((column) => (
                 <th
                   key={column}
                   scope="col"
-                  className="px-6 py-5 text-[11px] font-semibold tracking-[0.16em] text-ink-soft uppercase"
+                  className="px-4 py-4 text-[10px] font-semibold tracking-[0.16em] text-ink-soft uppercase sm:px-6 sm:py-5 sm:text-[11px]"
                 >
                   {column}
                 </th>
@@ -51,7 +51,7 @@ export function DataTable({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-6 py-14 text-center text-sm text-ink-soft"
+                  className="px-4 py-10 text-center text-sm text-ink-soft sm:px-6 sm:py-14"
                 >
                   {emptyMessage}
                 </td>
@@ -77,7 +77,7 @@ export function DataRow({
   return (
     <tr
       className={cn(
-        "border-b border-line/70 text-sm text-ink last:border-b-0",
+        "border-b border-line/70 text-[13px] text-ink last:border-b-0 sm:text-sm",
         className
       )}
     >
