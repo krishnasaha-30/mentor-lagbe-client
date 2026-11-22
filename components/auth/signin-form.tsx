@@ -94,14 +94,14 @@ export function SignInForm({
           {pending ? "Signing in..." : "Sign In"}
         </button>
 
-        <button
+        {/* <button
           type="button"
           onClick={onGoogle}
           disabled={busy}
           className="h-12 w-full rounded-full border border-ink/40 bg-transparent text-sm font-semibold text-ink transition-colors hover:bg-cream-soft disabled:cursor-not-allowed disabled:opacity-70"
         >
           {googlePending ? "Connecting to Google..." : "Continue with Google"}
-        </button>
+        </button> */}
       </form>
 
       <p className="mt-6 text-sm text-ink-soft">
