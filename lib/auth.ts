@@ -6,7 +6,20 @@ import { jwt } from "better-auth/plugins";
 const mongoUri =
   process.env.MongoDB_URI || process.env.MONGODB_URI || "";
 
-const client = new MongoClient(mongoUri);
+// Singleton pattern: reuse connected client across Next.js hot-reloads and
+// serverless invocations. Without this, the topology closes between requests.
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
+}
+
+const clientInstance = new MongoClient(mongoUri);
+
+const clientPromise: Promise<MongoClient> =
+  global._mongoClientPromise ??
+  (global._mongoClientPromise = clientInstance.connect());
+
+const client = await clientPromise;
 
 const db = client.db("mentor-lagbe-app");
 const betterAuthUrl =
