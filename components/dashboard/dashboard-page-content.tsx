@@ -2,6 +2,7 @@ import { DashboardOverview } from "@/components/dashboard/dashboard-overview"
 import { getAdminDashboard } from "@/lib/api/admin-dashboard"
 import { getMyApplications } from "@/lib/api/applications"
 import { getTutorDashboard } from "@/lib/api/tutor-dashboard"
+import { getToken } from "@/lib/core/server"
 import type { DashboardRole } from "@/lib/dashboard/nav"
 
 /**
@@ -18,7 +19,7 @@ export async function DashboardPageContent({
 }: {
   role: DashboardRole
   plan: "free" | "pro"
-  token: string
+  token?: string
 }) {
   let studentApplications = null
   let applicationsError = false
@@ -27,9 +28,14 @@ export async function DashboardPageContent({
   let adminDashboard = null
   let adminDashboardError = false
 
+  // BetterAuth JWT tokens are three dot-separated Base64 segments.
+  // If `token` is missing or is the opaque database session token, fetch the JWT.
+  const isJwt = typeof token === "string" && token.split(".").length === 3
+  const authToken = isJwt ? token : await getToken()
+
   if (role === "student") {
     try {
-      const applications = await getMyApplications(token)
+      const applications = await getMyApplications(authToken)
       studentApplications = {
         total: applications.length,
         accepted: applications.filter(
@@ -54,7 +60,7 @@ export async function DashboardPageContent({
 
   if (role === "tutor") {
     try {
-      tutorDashboard = await getTutorDashboard(token)
+      tutorDashboard = await getTutorDashboard(authToken)
     } catch (error) {
       console.error("Could not load tutor dashboard summary:", error)
       tutorDashboardError = true
@@ -63,7 +69,7 @@ export async function DashboardPageContent({
 
   if (role === "admin") {
     try {
-      adminDashboard = await getAdminDashboard(token)
+      adminDashboard = await getAdminDashboard(authToken)
     } catch (error) {
       console.error("Could not load admin dashboard summary:", error)
       adminDashboardError = true

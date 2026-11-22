@@ -6,12 +6,22 @@ import { jwt } from "better-auth/plugins";
 const client = new MongoClient(process.env.MongoDB_URI as string);
 
 const db = client.db("mentor-lagbe-app");
-const authIssuer = process.env.BETTER_AUTH_URL
-  ? new URL(process.env.BETTER_AUTH_URL).origin
-  : undefined;
+const betterAuthUrl =
+  process.env.BETTER_AUTH_URL ||
+  (process.env.NODE_ENV === "production"
+    ? "https://mentor-lagbe-client-six.vercel.app"
+    : "http://localhost:3000");
+
+const authIssuer = new URL(betterAuthUrl).origin;
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL as string,
+  baseURL: betterAuthUrl,
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://mentor-lagbe-client-six.vercel.app",
+    authIssuer,
+  ],
   database: mongodbAdapter(db, {
     client,
   }),

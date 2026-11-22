@@ -130,7 +130,7 @@ export function Navbar() {
               >
                 Dashboard
               </Link>
-              <Link
+              {/* <Link
                 href="/dashboard/profile"
                 onClick={() => setSelectedAnchor(null)}
                 className={cn(
@@ -139,7 +139,7 @@ export function Navbar() {
                 )}
               >
                 Update Profile
-              </Link>
+              </Link> */}
               <div className="flex items-center gap-2 rounded-full border border-line bg-white py-1 pr-2 pl-1">
                 <UserAvatar
                   name={session.user.name}
