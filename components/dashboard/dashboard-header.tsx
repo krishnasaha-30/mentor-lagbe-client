@@ -85,7 +85,7 @@ export function DashboardHeader({
             className="hidden h-11 shrink-0 items-center rounded-full bg-coral px-5 text-sm font-semibold text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-coral-dark hover:text-white hover:shadow-lg hover:shadow-coral/25 sm:inline-flex"
           />
         ) : null}
-
+{/* 
         <button
           type="button"
           onClick={() => toast("You're all caught up — no new notifications.")}
@@ -97,7 +97,7 @@ export function DashboardHeader({
             className="size-[18px] transition-transform duration-300 group-hover:-rotate-12"
             strokeWidth={1.75}
           />
-        </button>
+        </button> */}
 
         <ThemeToggle className="size-10 sm:size-11" />
 
