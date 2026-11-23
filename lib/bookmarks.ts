@@ -1,16 +1,45 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useMemo, useSyncExternalStore } from "react"
 
 const STORAGE_KEY = "mentorlagbe_saved_tuitions"
+const UPDATE_EVENT = "mentorlagbe_bookmarks_updated"
+const EMPTY_SNAPSHOT = "[]"
+
+function parseIds(raw: string): string[] {
+  try {
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed)
+      ? parsed.filter((id) => typeof id === "string")
+      : []
+  } catch {
+    return []
+  }
+}
+
+/** Refreshes every bookmark hook when this tab (or another one) changes storage. */
+function subscribe(onChange: () => void) {
+  window.addEventListener(UPDATE_EVENT, onChange)
+  window.addEventListener("storage", onChange)
+
+  return () => {
+    window.removeEventListener(UPDATE_EVENT, onChange)
+    window.removeEventListener("storage", onChange)
+  }
+}
+
+function getSnapshot() {
+  return localStorage.getItem(STORAGE_KEY) ?? EMPTY_SNAPSHOT
+}
+
+function getServerSnapshot() {
+  return EMPTY_SNAPSHOT
+}
 
 export function getSavedTuitionIds(): string[] {
   if (typeof window === "undefined") return []
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed.filter((id) => typeof id === "string") : []
+    return parseIds(localStorage.getItem(STORAGE_KEY) ?? EMPTY_SNAPSHOT)
   } catch {
     return []
   }
@@ -36,7 +65,7 @@ export function toggleSaveTuition(id: string): boolean {
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    window.dispatchEvent(new Event("mentorlagbe_bookmarks_updated"))
+    window.dispatchEvent(new Event(UPDATE_EVENT))
   } catch {
     // LocalStorage quota or blocked
   }
@@ -44,46 +73,14 @@ export function toggleSaveTuition(id: string): boolean {
   return saved
 }
 
-export function useIsTuitionSaved(id: string) {
-  const [saved, setSaved] = useState(false)
+export function useSavedTuitionIds(): string[] {
+  const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
-  useEffect(() => {
-    setSaved(isTuitionSaved(id))
-
-    function onUpdated() {
-      setSaved(isTuitionSaved(id))
-    }
-
-    window.addEventListener("mentorlagbe_bookmarks_updated", onUpdated)
-    window.addEventListener("storage", onUpdated)
-
-    return () => {
-      window.removeEventListener("mentorlagbe_bookmarks_updated", onUpdated)
-      window.removeEventListener("storage", onUpdated)
-    }
-  }, [id])
-
-  return saved
+  return useMemo(() => parseIds(raw), [raw])
 }
 
-export function useSavedTuitionIds() {
-  const [ids, setIds] = useState<string[]>([])
+export function useIsTuitionSaved(id: string) {
+  const ids = useSavedTuitionIds()
 
-  useEffect(() => {
-    setIds(getSavedTuitionIds())
-
-    function onUpdated() {
-      setIds(getSavedTuitionIds())
-    }
-
-    window.addEventListener("mentorlagbe_bookmarks_updated", onUpdated)
-    window.addEventListener("storage", onUpdated)
-
-    return () => {
-      window.removeEventListener("mentorlagbe_bookmarks_updated", onUpdated)
-      window.removeEventListener("storage", onUpdated)
-    }
-  }, [])
-
-  return ids
+  return ids.includes(id)
 }
